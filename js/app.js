@@ -17,7 +17,11 @@
     const $$ = (sel) => document.querySelectorAll(sel);
 
     // ---------- Initialize App ----------
-    function init() {
+    async function init() {
+        // Load data from Supabase (or fallback to local)
+        await SupabaseDB.fetchTransactions();
+        await SupabaseDB.fetchBalance();
+
         renderHome();
         renderHistory();
         renderOffers();
@@ -242,11 +246,13 @@
 
     // ---------- Balance Card ----------
     function setupBalanceCard() {
-        $('#btn-check-balance').addEventListener('click', () => {
+        $('#btn-check-balance').addEventListener('click', async () => {
             if (!balanceVisible) {
                 balanceVisible = true;
                 const display = $('#balance-display');
-                animateNumber(display, APP_DATA.user.bank.balance);
+                // Fetch latest balance from Supabase
+                const balance = await SupabaseDB.fetchBalance();
+                animateNumber(display, balance);
                 $('#btn-check-balance').textContent = 'Hide balance';
             } else {
                 balanceVisible = false;
@@ -513,18 +519,20 @@
                     </div>
                 `;
 
-                // Add to transactions
-                APP_DATA.transactions.unshift({
+                // Save transaction to Supabase & deduct balance
+                SupabaseDB.saveTransaction({
                     id: APP_DATA.transactions.length + 1,
                     type: 'sent',
                     name: payee.name,
                     initials: payee.initials,
                     color: payee.color || '#4285F4',
                     amount: amount,
+                    upiId: payee.upiId || '',
                     date: new Date().toISOString(),
                     note: noteVal,
                     status: 'completed'
                 });
+                SupabaseDB.updateBalance(amount);
             } else {
                 resultContent.innerHTML = `
                     <div class="result-main-content">

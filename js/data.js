@@ -105,3 +105,122 @@ function getTimeAgo(dateStr) {
     if (days < 7) return `${days}d ago`;
     return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 }
+
+// ============================================================
+// Supabase Database Functions
+// ============================================================
+// These functions read/write to Supabase if configured,
+// otherwise fall back to local APP_DATA.
+
+const SupabaseDB = {
+
+    // Fetch all transactions from Supabase, newest first
+    async fetchTransactions() {
+        if (!isSupabaseConfigured()) return APP_DATA.transactions;
+
+        try {
+            const { data, error } = await supabase
+                .from('transactions')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            // Map DB rows to app format
+            const mapped = (data || []).map(row => ({
+                id: row.id,
+                type: row.type,
+                name: row.name,
+                initials: row.initials,
+                color: row.color || '#4285F4',
+                amount: row.amount,
+                upiId: row.upi_id,
+                date: row.created_at,
+                note: row.note || '',
+                status: row.status || 'completed'
+            }));
+
+            // Sync to local data
+            APP_DATA.transactions = mapped;
+            return mapped;
+        } catch (err) {
+            console.error('Supabase fetchTransactions error:', err);
+            return APP_DATA.transactions;
+        }
+    },
+
+    // Fetch balance from Supabase
+    async fetchBalance() {
+        if (!isSupabaseConfigured()) return APP_DATA.user.bank.balance;
+
+        try {
+            const { data, error } = await supabase
+                .from('user_balance')
+                .select('balance')
+                .limit(1)
+                .single();
+
+            if (error) throw error;
+
+            const balance = data?.balance ?? APP_DATA.user.bank.balance;
+            APP_DATA.user.bank.balance = balance;
+            return balance;
+        } catch (err) {
+            console.error('Supabase fetchBalance error:', err);
+            return APP_DATA.user.bank.balance;
+        }
+    },
+
+    // Save a new transaction to Supabase
+    async saveTransaction(txn) {
+        // Always add to local data
+        APP_DATA.transactions.unshift(txn);
+
+        if (!isSupabaseConfigured()) return txn;
+
+        try {
+            const { data, error } = await supabase
+                .from('transactions')
+                .insert({
+                    type: txn.type,
+                    name: txn.name,
+                    initials: txn.initials,
+                    color: txn.color,
+                    amount: txn.amount,
+                    upi_id: txn.upiId || '',
+                    note: txn.note || '',
+                    status: txn.status || 'completed'
+                })
+                .select()
+                .single();
+
+            if (error) throw error;
+            return data;
+        } catch (err) {
+            console.error('Supabase saveTransaction error:', err);
+            return txn;
+        }
+    },
+
+    // Deduct amount from balance in Supabase
+    async updateBalance(amountToDeduct) {
+        const newBalance = APP_DATA.user.bank.balance - amountToDeduct;
+        APP_DATA.user.bank.balance = newBalance;
+
+        if (!isSupabaseConfigured()) return newBalance;
+
+        try {
+            // Update the single row in user_balance
+            const { error } = await supabase
+                .from('user_balance')
+                .update({ balance: newBalance, updated_at: new Date().toISOString() })
+                .eq('id', 1);
+
+            if (error) throw error;
+            return newBalance;
+        } catch (err) {
+            console.error('Supabase updateBalance error:', err);
+            return newBalance;
+        }
+    }
+};
