@@ -484,16 +484,26 @@
                 const paySound = new Audio('gpay sound.mp3');
                 paySound.play().catch(() => {});
                 resultContent.innerHTML = `
-                    <div class="result-icon-circle success">
-                        <span class="material-symbols-rounded">check</span>
+                    <div class="result-main-content">
+                        <div class="result-icon-circle success">
+                            <span class="material-symbols-rounded">check</span>
+                        </div>
+                        <div class="result-amount">${formattedAmount}</div>
+                        <div class="result-paid-label">Paid to</div>
+                        <div class="result-payee-name">${currentPayee.name}</div>
+                        <div class="result-payee-upi">${currentPayee.upiId}</div>
+                        <div class="result-date">${formattedDate}</div>
                     </div>
-                    <div class="result-amount">${formattedAmount}</div>
-                    <div class="result-paid-label">Paid to</div>
-                    <div class="result-payee-name">${currentPayee.name}</div>
-                    <div class="result-payee-upi">${currentPayee.upiId}</div>
-                    <div class="result-date">${formattedDate}</div>
-                    <div class="result-done-area">
-                        <button class="result-btn secondary ripple" id="btn-result-done">Done</button>
+                    <div class="result-upi-badge">
+                        <span style="font-size: 10px; color: #9aa0a6; letter-spacing: 0.5px;">POWERED BY</span>
+                        <span style="font-size: 13px; font-weight: 700; background: linear-gradient(135deg, #4285F4, #34A853, #FBBC04, #EA4335); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 1px;">UPI</span>
+                    </div>
+                    <div class="result-bottom-bar">
+                        <button class="result-share-btn ripple" id="btn-result-share">
+                            <span class="material-symbols-rounded" style="font-size: 18px;">share</span>
+                            Share screenshot
+                        </button>
+                        <button class="result-done-btn ripple" id="btn-result-done">Done</button>
                     </div>
                 `;
 
@@ -511,15 +521,17 @@
                 });
             } else {
                 resultContent.innerHTML = `
-                    <div class="result-icon-circle failure">
-                        <span class="material-symbols-rounded">close</span>
+                    <div class="result-main-content">
+                        <div class="result-icon-circle failure">
+                            <span class="material-symbols-rounded">close</span>
+                        </div>
+                        <div class="result-amount">${formattedAmount}</div>
+                        <div class="result-payee-name">${currentPayee.name}</div>
+                        <div class="result-failure-msg">Payment failed. Please try again later.</div>
                     </div>
-                    <div class="result-amount">${formattedAmount}</div>
-                    <div class="result-payee-name">${currentPayee.name}</div>
-                    <div class="result-failure-msg">Payment failed. Please try again later.</div>
-                    <div class="result-done-area">
-                        <button class="result-btn secondary ripple" id="btn-result-done">Done</button>
-                        <button class="result-btn primary ripple" id="btn-result-retry">Retry</button>
+                    <div class="result-bottom-bar">
+                        <button class="result-share-btn ripple" id="btn-result-done">Done</button>
+                        <button class="result-done-btn ripple" id="btn-result-retry">Retry</button>
                     </div>
                 `;
             }
