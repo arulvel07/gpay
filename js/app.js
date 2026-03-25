@@ -343,9 +343,9 @@
 
         // Update payment screen
         $('#payee-initials').textContent = contact.initials;
-        $('#payee-avatar').style.background = contact.color || '#4285F4';
+        $('#payee-avatar').style.background = contact.color || '#9aa0a6';
         $('#payee-name').textContent = contact.name;
-        $('#payee-upi').textContent = contact.upiId;
+        $('#payee-banking-name').textContent = contact.name;
 
         const amountInput = $('#amount-input');
         const noteInput = $('#note-input');

@@ -221,36 +221,47 @@
 
         <!-- ==================== PAYMENT SCREEN ==================== -->
         <div class="screen screen-overlay hidden" id="screen-payment">
-            <div class="header">
-                <button class="header-back ripple" id="btn-payment-back">
-                    <span class="material-symbols-rounded">arrow_back</span>
+            <div class="pay-header-dark">
+                <button class="pay-header-btn ripple" id="btn-payment-back">
+                    <span class="material-symbols-rounded">close</span>
                 </button>
-                <span class="header-title" id="payment-title">Pay</span>
+                <div style="flex: 1;"></div>
+                <button class="pay-header-btn ripple">
+                    <span class="material-symbols-rounded">tune</span>
+                </button>
+                <button class="pay-header-btn ripple">
+                    <span class="material-symbols-rounded">more_vert</span>
+                </button>
             </div>
-            <div class="payment-screen" style="flex: 1; display: flex; flex-direction: column;">
-                <div class="payment-header">
-                    <div class="payment-payee-avatar" id="payee-avatar" style="background: #4285F4;">
+            <div class="pay-body-dark">
+                <div class="pay-payee-section">
+                    <div class="pay-payee-avatar-dark" id="payee-avatar">
                         <span id="payee-initials">?</span>
                     </div>
-                    <div class="payment-payee-name" id="payee-name">Payee Name</div>
-                    <div class="payment-payee-upi" id="payee-upi">payee@upi</div>
+                    <div class="pay-payee-label">Paying <span id="payee-name">Payee Name</span></div>
+                    <div class="pay-payee-verified">
+                        <span class="material-symbols-rounded pay-verified-icon">verified</span>
+                        <span>Banking name: <span id="payee-banking-name">Payee Name</span></span>
+                    </div>
                 </div>
 
-                <div class="amount-input-section">
-                    <div class="amount-display">
-                        <span class="amount-rupee">₹</span>
-                        <input type="text" class="amount-value" id="amount-input" placeholder="0" inputmode="decimal"
-                            autocomplete="off">
-                    </div>
-                    <input type="text" class="note-input" id="note-input" placeholder="Add a note" autocomplete="off">
+                <div class="pay-amount-section">
+                    <span class="pay-rupee-sign">₹</span>
+                    <input type="text" class="pay-amount-input" id="amount-input" placeholder="0" inputmode="decimal"
+                        autocomplete="off">
+                </div>
+
+                <div class="pay-note-pill" id="note-pill">
+                    <input type="text" class="pay-note-input" id="note-input" placeholder="Add note" autocomplete="off">
                 </div>
 
                 <div style="flex: 1;"></div>
 
-                <button class="pay-button ripple" id="btn-pay" disabled>
-                    <span class="material-symbols-rounded">lock</span>
-                    Pay securely using UPI
-                </button>
+                <div class="pay-proceed-area">
+                    <button class="pay-proceed-btn ripple" id="btn-pay" disabled>
+                        <span class="material-symbols-rounded">arrow_forward</span>
+                    </button>
+                </div>
             </div>
         </div>
 

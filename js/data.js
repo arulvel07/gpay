@@ -14,7 +14,7 @@ const APP_DATA = {
             name: "Axis Bank",
             account: "XXXX XXXX 4521",
             ifsc: "UTIB0001234",
-            balance: 24580.50
+            balance: 5000.50
         }
     },
 
