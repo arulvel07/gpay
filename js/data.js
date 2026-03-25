@@ -141,10 +141,13 @@ const SupabaseDB = {
             }));
 
             // Sync to local data
-            APP_DATA.transactions = mapped;
-            return mapped;
+            if (mapped.length > 0) {
+                APP_DATA.transactions = mapped;
+            }
+            return APP_DATA.transactions;
         } catch (err) {
             console.error('Supabase fetchTransactions error:', err);
+            alert('Supabase Error (Transactions):\n' + (err.message || JSON.stringify(err)) + '\n\nAre your table names correct and RLS policies disabled?');
             return APP_DATA.transactions;
         }
     },
@@ -158,15 +161,22 @@ const SupabaseDB = {
                 .from('user_balance')
                 .select('balance')
                 .limit(1)
-                .single();
+                .maybeSingle(); // Use maybeSingle to avoid throw on 0 rows
 
             if (error) throw error;
 
-            const balance = data?.balance ?? APP_DATA.user.bank.balance;
+            if (!data) {
+                // Table is empty, insert initial row
+                await supabase.from('user_balance').insert({ balance: 4532.00 });
+                return 4532.00;
+            }
+
+            const balance = data.balance ?? APP_DATA.user.bank.balance;
             APP_DATA.user.bank.balance = balance;
             return balance;
         } catch (err) {
             console.error('Supabase fetchBalance error:', err);
+            alert('Supabase Error (Balance):\n' + (err.message || JSON.stringify(err)) + '\n\nMake sure the user_balance table exists and RLS is disabled!');
             return APP_DATA.user.bank.balance;
         }
     },
@@ -198,6 +208,7 @@ const SupabaseDB = {
             return data;
         } catch (err) {
             console.error('Supabase saveTransaction error:', err);
+            alert('Failed to save payment to Supabase:\n' + (err.message || JSON.stringify(err)));
             return txn;
         }
     },
@@ -210,16 +221,34 @@ const SupabaseDB = {
         if (!isSupabaseConfigured()) return newBalance;
 
         try {
-            // Update the single row in user_balance
-            const { error } = await supabase
+            // First find the row to update
+            const { data: fetchRow, error: fetchErr } = await supabase
                 .from('user_balance')
-                .update({ balance: newBalance, updated_at: new Date().toISOString() })
-                .eq('id', 1);
+                .select('id')
+                .limit(1)
+                .maybeSingle();
 
-            if (error) throw error;
+            if (fetchErr) throw fetchErr;
+
+            if (fetchRow) {
+                // Update the existing row
+                const { error } = await supabase
+                    .from('user_balance')
+                    .update({ balance: newBalance, updated_at: new Date().toISOString() })
+                    .eq('id', fetchRow.id);
+                if (error) throw error;
+            } else {
+                // No row exists, insert one
+                const { error } = await supabase
+                    .from('user_balance')
+                    .insert({ balance: newBalance });
+                if (error) throw error;
+            }
+
             return newBalance;
         } catch (err) {
             console.error('Supabase updateBalance error:', err);
+            alert('Failed to deduct balance from Supabase:\n' + (err.message || JSON.stringify(err)));
             return newBalance;
         }
     }
