@@ -267,44 +267,65 @@
 
         <!-- ==================== PIN SCREEN ==================== -->
         <div class="screen screen-overlay hidden" id="screen-pin">
-            <div class="header">
-                <button class="header-back ripple" id="btn-pin-back">
-                    <span class="material-symbols-rounded">arrow_back</span>
+            <!-- UPI Header -->
+            <div class="upi-pin-header">
+                <div class="upi-pin-header-left">
+                    <div class="upi-logo-mark">UPI</div>
+                    <span class="upi-bank-name" id="pin-bank-name">Axis Bank</span>
+                </div>
+                <button class="pay-header-btn ripple" id="btn-pin-back" style="color: #5f6368;">
+                    <span class="material-symbols-rounded">close</span>
                 </button>
-                <span class="header-title">UPI PIN</span>
             </div>
-            <div class="pin-screen">
-                <div class="pin-title">Enter your UPI PIN</div>
-                <div class="pin-subtitle" id="pin-bank-label">Axis Bank ••4521</div>
-                <div class="pin-dots" id="pin-dots">
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
+
+            <!-- Payment Summary Card -->
+            <div class="upi-pay-summary">
+                <div class="upi-pay-summary-left">
+                    <div class="upi-pay-summary-amount">Pay <span id="pin-pay-amount">₹0.00</span></div>
+                    <div class="upi-pay-summary-to">To <span id="pin-payee-name">Payee</span></div>
                 </div>
-                <div class="numpad" id="pin-numpad">
-                    <button class="numpad-key ripple" data-key="1">1</button>
-                    <button class="numpad-key ripple" data-key="2">2</button>
-                    <button class="numpad-key ripple" data-key="3">3</button>
-                    <button class="numpad-key ripple" data-key="4">4</button>
-                    <button class="numpad-key ripple" data-key="5">5</button>
-                    <button class="numpad-key ripple" data-key="6">6</button>
-                    <button class="numpad-key ripple" data-key="7">7</button>
-                    <button class="numpad-key ripple" data-key="8">8</button>
-                    <button class="numpad-key ripple" data-key="9">9</button>
-                    <button class="numpad-key ripple" data-key=""></button>
-                    <button class="numpad-key ripple" data-key="0">0</button>
-                    <button class="numpad-key ripple" data-key="back">
-                        <span class="material-symbols-rounded">backspace</span>
-                    </button>
+                <div class="upi-pay-summary-icon">
+                    <span style="font-size: 18px; color: #5f6368;">₹</span>
+                    <span class="material-symbols-rounded" style="font-size: 14px; color: #5f6368;">arrow_forward</span>
+                    <span class="material-symbols-rounded" style="font-size: 20px; color: #34A853;">account_balance</span>
                 </div>
-                <button class="pay-button ripple" id="btn-confirm-pin" style="margin: 0 24px; width: calc(100% - 48px);"
-                    disabled>
-                    <span class="material-symbols-rounded">check</span>
-                    Confirm
+            </div>
+
+            <!-- PIN Entry Area -->
+            <div class="upi-pin-body">
+                <div class="upi-pin-title">Enter your PIN</div>
+                <div class="upi-pin-dots" id="pin-dots">
+                    <div class="upi-dot"></div>
+                    <div class="upi-dot"></div>
+                    <div class="upi-dot"></div>
+                    <div class="upi-dot"></div>
+                    <div class="upi-dot"></div>
+                    <div class="upi-dot"></div>
+                </div>
+            </div>
+
+            <!-- Warning -->
+            <div class="upi-pin-warning">
+                <span class="material-symbols-rounded" style="font-size: 16px; color: #EA4335;">error</span>
+                <span>Never enter your UPI PIN to receive money</span>
+            </div>
+
+            <!-- Numpad -->
+            <div class="upi-numpad" id="pin-numpad">
+                <button class="upi-numpad-key ripple" data-key="1">1</button>
+                <button class="upi-numpad-key ripple" data-key="2">2</button>
+                <button class="upi-numpad-key ripple" data-key="3">3</button>
+                <button class="upi-numpad-key ripple" data-key="4">4</button>
+                <button class="upi-numpad-key ripple" data-key="5">5</button>
+                <button class="upi-numpad-key ripple" data-key="6">6</button>
+                <button class="upi-numpad-key ripple" data-key="7">7</button>
+                <button class="upi-numpad-key ripple" data-key="8">8</button>
+                <button class="upi-numpad-key ripple" data-key="9">9</button>
+                <button class="upi-numpad-key upi-numpad-backspace ripple" data-key="back">
+                    <span class="material-symbols-rounded">backspace</span>
                 </button>
+                <button class="upi-numpad-key ripple" data-key="0">0</button>
+                <button class="upi-numpad-key upi-numpad-pay ripple" id="btn-confirm-pin" disabled>Pay</button>
             </div>
         </div>
 

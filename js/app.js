@@ -366,10 +366,11 @@
     // ---------- PIN Screen ----------
     function setupPinPad() {
         const numpad = $('#pin-numpad');
-        numpad.querySelectorAll('.numpad-key').forEach(key => {
+        numpad.querySelectorAll('.upi-numpad-key').forEach(key => {
             key.addEventListener('click', () => {
                 const val = key.dataset.key;
 
+                if (key.id === 'btn-confirm-pin') return; // handled separately
                 if (val === 'back') {
                     pinValue = pinValue.slice(0, -1);
                 } else if (val === '' || val === undefined) {
@@ -380,7 +381,7 @@
 
                 updatePinDots();
 
-                // Auto-submit when 6 digits
+                // Enable Pay when 6 digits
                 if (pinValue.length === 6) {
                     $('#btn-confirm-pin').disabled = false;
                 } else {
@@ -404,11 +405,18 @@
         pinValue = '';
         updatePinDots();
         $('#btn-confirm-pin').disabled = true;
+
+        // Populate payment summary
+        const amount = parseFloat(payAmount);
+        $('#pin-pay-amount').textContent = '₹' + amount.toFixed(2);
+        $('#pin-payee-name').textContent = currentPayee.name;
+        $('#pin-bank-name').textContent = APP_DATA.user.bank.name;
+
         showOverlay('pin');
     }
 
     function updatePinDots() {
-        const dots = $$('#pin-dots .pin-dot');
+        const dots = $$('#pin-dots .upi-dot');
         dots.forEach((dot, i) => {
             if (i < pinValue.length) {
                 dot.classList.add('filled');
