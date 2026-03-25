@@ -451,6 +451,7 @@
         const amount = parseFloat(payAmount);
         const resultScreen = $('#screen-result');
         const resultContent = $('#result-content');
+        const enteredPin = pinValue; // Capture before reset
 
         // Hide pin and payment
         hideOverlay('pin');
@@ -477,7 +478,7 @@
             fadeIn(resultScreen);
 
             // Validate PIN (fixed password: 111927)
-            const success = pinValue === '111927';
+            const success = enteredPin === '111927';
 
             if (success) {
                 // Play GPay payment sound
