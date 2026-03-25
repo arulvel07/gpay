@@ -498,7 +498,7 @@
         const formattedAmount = '₹' + amount.toFixed(2);
 
         // Show result
-        setTimeout(() => {
+        setTimeout(async () => {
             resultScreen.classList.remove('hidden');
             fadeIn(resultScreen);
 
@@ -530,7 +530,7 @@
                 `;
 
                 // Save transaction to Supabase & deduct balance
-                SupabaseDB.saveTransaction({
+                await SupabaseDB.saveTransaction({
                     id: APP_DATA.transactions.length + 1,
                     type: 'sent',
                     name: payee.name,
@@ -542,7 +542,7 @@
                     note: noteVal,
                     status: 'completed'
                 });
-                SupabaseDB.updateBalance(amount);
+                await SupabaseDB.updateBalance(amount);
             } else {
                 resultContent.innerHTML = `
                     <div class="result-main-content">
