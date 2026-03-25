@@ -448,10 +448,19 @@
 
     // ---------- Process Payment ----------
     function processPayment() {
+        // Capture everything BEFORE any resets
         const amount = parseFloat(payAmount);
+        const enteredPin = pinValue;
+        const payee = currentPayee;
+        const noteVal = $('#note-input').value || '';
+        const isSuccess = (enteredPin === '111927');
+
         const resultScreen = $('#screen-result');
         const resultContent = $('#result-content');
-        const enteredPin = pinValue; // Capture before reset
+
+        // Reset immediately
+        pinValue = '';
+        payAmount = '';
 
         // Hide pin and payment
         hideOverlay('pin');
@@ -477,13 +486,10 @@
             resultScreen.classList.remove('hidden');
             fadeIn(resultScreen);
 
-            // Validate PIN (fixed password: 111927)
-            const success = enteredPin === '111927';
-
-            if (success) {
+            if (isSuccess) {
                 // Play GPay payment sound
                 const paySound = new Audio('gpay sound.mp3');
-                paySound.play().catch(() => {});
+                paySound.play().catch(() => { });
                 resultContent.innerHTML = `
                     <div class="result-main-content">
                         <div class="result-icon-circle success">
@@ -491,8 +497,8 @@
                         </div>
                         <div class="result-amount">${formattedAmount}</div>
                         <div class="result-paid-label">Paid to</div>
-                        <div class="result-payee-name">${currentPayee.name}</div>
-                        <div class="result-payee-upi">${currentPayee.upiId}</div>
+                        <div class="result-payee-name">${payee.name}</div>
+                        <div class="result-payee-upi">${payee.upiId}</div>
                         <div class="result-date">${formattedDate}</div>
                     </div>
                     <div class="result-upi-badge">
@@ -511,12 +517,12 @@
                 APP_DATA.transactions.unshift({
                     id: APP_DATA.transactions.length + 1,
                     type: 'sent',
-                    name: currentPayee.name,
-                    initials: currentPayee.initials,
-                    color: currentPayee.color || '#4285F4',
+                    name: payee.name,
+                    initials: payee.initials,
+                    color: payee.color || '#4285F4',
                     amount: amount,
                     date: new Date().toISOString(),
-                    note: $('#note-input').value || '',
+                    note: noteVal,
                     status: 'completed'
                 });
             } else {
@@ -526,7 +532,7 @@
                             <span class="material-symbols-rounded">close</span>
                         </div>
                         <div class="result-amount">${formattedAmount}</div>
-                        <div class="result-payee-name">${currentPayee.name}</div>
+                        <div class="result-payee-name">${payee.name}</div>
                         <div class="result-failure-msg">Payment failed. Please try again later.</div>
                     </div>
                     <div class="result-bottom-bar">
@@ -557,7 +563,7 @@
                         fadeOut(resultScreen);
                         setTimeout(() => {
                             resultScreen.classList.add('hidden');
-                            startPayment(currentPayee);
+                            startPayment(payee);
                         }, 300);
                     });
                 }
@@ -566,10 +572,6 @@
             }, 100);
 
         }, 600);
-
-        // Reset
-        pinValue = '';
-        payAmount = '';
     }
 
     // ---------- Boot ----------
