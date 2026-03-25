@@ -495,8 +495,7 @@
                         <div class="result-date">${formattedDate}</div>
                     </div>
                     <div class="result-upi-badge">
-                        <span style="font-size: 10px; color: #9aa0a6; letter-spacing: 0.5px;">POWERED BY</span>
-                        <span style="font-size: 13px; font-weight: 700; background: linear-gradient(135deg, #4285F4, #34A853, #FBBC04, #EA4335); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 1px;">UPI</span>
+                        <img src="upi.png" alt="Powered by UPI" class="result-upi-logo">
                     </div>
                     <div class="result-bottom-bar">
                         <button class="result-share-btn ripple" id="btn-result-share">
