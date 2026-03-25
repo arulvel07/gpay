@@ -1,5 +1,5 @@
 // Service Worker for Google Pay Replica
-const CACHE_NAME = 'gpay-cache-v1';
+const CACHE_NAME = 'gpay-cache-v2';
 const ASSETS = [
     '/',
     '/index.html',

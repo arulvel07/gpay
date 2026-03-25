@@ -18,27 +18,37 @@
 
     // ---------- Initialize App ----------
     async function init() {
-        // Load data from Supabase (or fallback to local)
-        await SupabaseDB.fetchTransactions();
-        await SupabaseDB.fetchBalance();
+        try {
+            // Load data from Supabase (or fallback to local)
+            await SupabaseDB.fetchTransactions();
+            await SupabaseDB.fetchBalance();
+        } catch (err) {
+            console.error('Failed to init Supabase data, falling back to local:', err);
+        }
 
-        renderHome();
-        renderHistory();
-        renderOffers();
-        setupNavigation();
-        setupPaymentFlow();
-        setupPinPad();
-        setupSearch();
-        setupBalanceCard();
+        try {
+            renderHome();
+            renderHistory();
+            renderOffers();
+            setupNavigation();
+            setupPaymentFlow();
+            setupPinPad();
+            setupSearch();
+            setupBalanceCard();
+        } catch (err) {
+            console.error('Render error:', err);
+        }
 
         // Splash screen
         setTimeout(() => {
             const splash = $('#splash-screen');
-            splash.classList.add('fade-out');
-            setTimeout(() => {
-                splash.style.display = 'none';
-                showScreen('home');
-            }, 500);
+            if (splash) {
+                splash.classList.add('fade-out');
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    showScreen('home');
+                }, 500);
+            }
         }, 1800);
 
         // Apply ripple effects

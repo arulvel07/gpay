@@ -13,5 +13,6 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Check if Supabase is configured
 const isSupabaseConfigured = () => {
-    return SUPABASE_URL !== 'https://fxqldchdtwrbotrncpwj.supabase.co' && SUPABASE_ANON_KEY !== 'sb_publishable_Lp648102fJQI9DHARoWOVQ_36-sHF56';
+    return SUPABASE_URL && SUPABASE_URL.startsWith('http') &&
+           SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.length > 20;
 };
