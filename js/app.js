@@ -476,8 +476,8 @@
             resultScreen.classList.remove('hidden');
             fadeIn(resultScreen);
 
-            // Random success (90% chance)
-            const success = Math.random() < 0.9;
+            // Validate PIN (fixed password: 111927)
+            const success = pinValue === '111927';
 
             if (success) {
                 // Play GPay payment sound
