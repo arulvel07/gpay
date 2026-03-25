@@ -323,7 +323,16 @@
             payAmount = val;
 
             const payBtn = $('#btn-pay');
-            payBtn.disabled = !val || parseFloat(val) <= 0;
+            const hasAmount = val && parseFloat(val) > 0;
+            payBtn.disabled = !hasAmount;
+
+            // Update Pay button text
+            if (hasAmount) {
+                const amt = parseFloat(val);
+                $('#pay-btn-amount').textContent = '₹' + (Number.isInteger(amt) ? amt : amt.toFixed(2));
+            } else {
+                $('#pay-btn-amount').textContent = '₹0';
+            }
         });
 
         // Pay button
@@ -346,6 +355,10 @@
         $('#payee-avatar').style.background = contact.color || '#9aa0a6';
         $('#payee-name').textContent = contact.name;
         $('#payee-banking-name').textContent = contact.name;
+        $('#payee-upi-display').textContent = contact.upiId || '';
+
+        // Bank info in bottom sheet
+        $('#sheet-bank-name').textContent = APP_DATA.user.bank.name + ' ••••' + APP_DATA.user.bank.account.slice(-4);
 
         const amountInput = $('#amount-input');
         const noteInput = $('#note-input');
@@ -354,7 +367,14 @@
         noteInput.value = prefillNote;
         payAmount = prefillAmount;
 
-        $('#btn-pay').disabled = !prefillAmount || parseFloat(prefillAmount) <= 0;
+        const hasAmount = prefillAmount && parseFloat(prefillAmount) > 0;
+        $('#btn-pay').disabled = !hasAmount;
+        if (hasAmount) {
+            const amt = parseFloat(prefillAmount);
+            $('#pay-btn-amount').textContent = '₹' + (Number.isInteger(amt) ? amt : amt.toFixed(2));
+        } else {
+            $('#pay-btn-amount').textContent = '₹0';
+        }
 
         showOverlay('payment');
 

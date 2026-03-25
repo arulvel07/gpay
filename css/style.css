@@ -1005,47 +1005,99 @@ ul, ol { list-style: none; }
     color: #9aa0a6;
 }
 
-/* Proceed Arrow Button */
-.pay-proceed-area {
-    display: flex;
-    justify-content: flex-end;
-    padding: 16px 0;
+/* UPI ID line */
+.pay-payee-upi-id {
+    font-size: 13px;
+    color: #9aa0a6;
+    margin-top: 2px;
 }
 
-.pay-proceed-btn {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    background: #4285F4;
+/* Bottom Sheet */
+.pay-bottom-sheet {
+    background: #2d2d2d;
+    border-radius: 20px 20px 0 0;
+    padding: 20px 20px 24px;
+    margin: 0 -24px -24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.pay-sheet-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #e8eaed;
+}
+
+.pay-sheet-bank {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #3c4043;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.pay-sheet-bank-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e8f0fe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.pay-sheet-bank-info {
+    flex: 1;
+}
+
+.pay-sheet-bank-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #e8eaed;
+}
+
+.pay-sheet-bank-balance {
+    font-size: 13px;
+    color: #9aa0a6;
+    margin-top: 2px;
+}
+
+.pay-sheet-check-link {
+    color: #8ab4f8;
+}
+
+.pay-sheet-btn {
+    width: 100%;
+    padding: 14px;
+    background: rgba(138, 180, 248, 0.15);
+    border: 1px solid rgba(138, 180, 248, 0.3);
+    color: #8ab4f8;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
-    transition: background 200ms ease, transform 200ms ease, opacity 200ms ease;
-    box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+    transition: background 200ms ease, transform 200ms ease;
+    font-family: inherit;
 }
 
-.pay-proceed-btn .material-symbols-rounded {
-    font-size: 28px;
-    color: white;
+.pay-sheet-btn:hover {
+    background: rgba(138, 180, 248, 0.25);
 }
 
-.pay-proceed-btn:hover {
-    background: #3367d6;
-    transform: translateY(-1px);
-}
-
-.pay-proceed-btn:disabled {
-    background: #3c4043;
-    box-shadow: none;
+.pay-sheet-btn:disabled {
+    background: rgba(138, 180, 248, 0.08);
+    border-color: rgba(138, 180, 248, 0.15);
+    color: #5f6368;
     cursor: not-allowed;
-    transform: none;
-    opacity: 0.6;
-}
-
-.pay-proceed-btn:disabled .material-symbols-rounded {
-    color: #9aa0a6;
 }
 
 /* Keep pay-button for PIN screen */

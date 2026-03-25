@@ -243,6 +243,7 @@
                         <span class="material-symbols-rounded pay-verified-icon">verified</span>
                         <span>Banking name: <span id="payee-banking-name">Payee Name</span></span>
                     </div>
+                    <div class="pay-payee-upi-id" id="payee-upi-display"></div>
                 </div>
 
                 <div class="pay-amount-section">
@@ -257,9 +258,21 @@
 
                 <div style="flex: 1;"></div>
 
-                <div class="pay-proceed-area">
-                    <button class="pay-proceed-btn ripple" id="btn-pay" disabled>
-                        <span class="material-symbols-rounded">arrow_forward</span>
+                <!-- Bottom Sheet: Choose account & Pay -->
+                <div class="pay-bottom-sheet" id="pay-bottom-sheet">
+                    <div class="pay-sheet-title">Choose account to pay with</div>
+                    <div class="pay-sheet-bank ripple">
+                        <div class="pay-sheet-bank-icon">
+                            <span class="material-symbols-rounded" style="color: #1a73e8; font-size: 22px;">account_balance</span>
+                        </div>
+                        <div class="pay-sheet-bank-info">
+                            <div class="pay-sheet-bank-name" id="sheet-bank-name">Axis Bank ••••4521</div>
+                            <div class="pay-sheet-bank-balance">Balance: <span class="pay-sheet-check-link">Check now</span></div>
+                        </div>
+                        <span class="material-symbols-rounded" style="color: #9aa0a6; font-size: 20px;">expand_more</span>
+                    </div>
+                    <button class="pay-sheet-btn ripple" id="btn-pay" disabled>
+                        <span>Pay <span id="pay-btn-amount">₹0</span></span>
                     </button>
                 </div>
             </div>
