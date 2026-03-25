@@ -4,7 +4,7 @@
 
 const APP_DATA = {
     user: {
-        name: "Mohit Kumar",
+        name: "Mohit Kumr",
         phone: "+91 98765 43210",
         email: "mohit.kumar@gmail.com",
         upiId: "mohit@okaxis",
@@ -32,16 +32,7 @@ const APP_DATA = {
     ],
 
     transactions: [
-        { id: 1, type: "sent", name: "Priya Patel", initials: "PP", color: "#EA4335", amount: 500, date: "2026-03-25T18:30:00", note: "Dinner split", status: "completed" },
-        { id: 2, type: "received", name: "Rahul Verma", initials: "RV", color: "#FBBC04", amount: 1200, date: "2026-03-25T14:15:00", note: "Movie tickets", status: "completed" },
-        { id: 3, type: "sent", name: "Aarav Sharma", initials: "AS", color: "#4285F4", amount: 2000, date: "2026-03-24T20:45:00", note: "Rent share", status: "completed" },
-        { id: 4, type: "sent", name: "Swiggy", initials: "SW", color: "#FC8019", amount: 349, date: "2026-03-24T13:00:00", note: "Food order", status: "completed" },
-        { id: 5, type: "received", name: "Sneha Gupta", initials: "SG", color: "#34A853", amount: 750, date: "2026-03-23T19:30:00", note: "Gift", status: "completed" },
-        { id: 6, type: "sent", name: "Amazon Pay", initials: "AP", color: "#FF9900", amount: 1499, date: "2026-03-23T11:20:00", note: "Shopping", status: "completed" },
-        { id: 7, type: "received", name: "Vikram Singh", initials: "VS", color: "#8E24AA", amount: 300, date: "2026-03-22T16:00:00", note: "Chai money", status: "completed" },
-        { id: 8, type: "sent", name: "Electricity Bill", initials: "EB", color: "#1565C0", amount: 2350, date: "2026-03-22T09:45:00", note: "March bill", status: "completed" },
-        { id: 9, type: "received", name: "Cashback", initials: "CB", color: "#00C853", amount: 50, date: "2026-03-21T12:00:00", note: "Reward", status: "completed" },
-        { id: 10, type: "sent", name: "Karan Mehta", initials: "KM", color: "#00BCD4", amount: 450, date: "2026-03-21T08:30:00", note: "Books", status: "completed" },
+
     ],
 
     businesses: [

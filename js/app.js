@@ -452,6 +452,9 @@
             const success = Math.random() < 0.9;
 
             if (success) {
+                // Play GPay payment sound
+                const paySound = new Audio('gpay sound.mp3');
+                paySound.play().catch(() => {});
                 resultContent.innerHTML = `
                     <div class="result-icon-circle success">
                         <span class="material-symbols-rounded">check</span>
