@@ -512,8 +512,8 @@ ul, ol { list-style: none; }
     white-space: nowrap;
 }
 
-.transaction-amount.sent { color: var(--text-primary); }
-.transaction-amount.received { color: var(--gpay-green); }
+.transaction-amount.sent { color: #EA4335; /* Google Red */ }
+.transaction-amount.received { color: #34A853; /* Google Green */ }
 
 /* ---------- Promotional Banner ---------- */
 .promo-section {

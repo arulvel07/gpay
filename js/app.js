@@ -207,7 +207,7 @@
                     <div class="transaction-name">${tx.name}</div>
                     <div class="transaction-date">${formatDate(tx.date)}</div>
                 </div>
-                <div class="transaction-amount ${tx.type}">
+                <div class="transaction-amount ${tx.type === 'sent' ? 'sent' : 'received'}">
                     ${tx.type === 'sent' ? '- ' : '+ '}${formatCurrency(tx.amount)}
                 </div>
             </div>
