@@ -113,7 +113,7 @@
             setTimeout(() => el.classList.add('hidden'), 350);
         } else {
             const target = ['home', 'history', 'offers', 'profile'].includes(hash) ? hash : 'home';
-            
+
             const tabScreens = ['home', 'history', 'offers', 'profile'];
             tabScreens.forEach(s => {
                 const el = $(`#screen-${s}`);
@@ -126,7 +126,7 @@
                 }
             });
             currentScreen = target;
-            
+
             $$('.nav-item').forEach(n => n.classList.remove('active'));
             const activeNav = $(`.nav-item[data-screen="${target}"]`);
             if (activeNav) activeNav.classList.add('active');
@@ -326,17 +326,17 @@
 
     function renderTransactionList(selector, transactions, groupByMonth = false) {
         const container = $(selector);
-        
+
         let html = '';
         let currentMonthGroup = '';
 
         transactions.forEach(tx => {
             const isFailed = tx.status === 'failed';
-            
+
             if (groupByMonth) {
                 const dateObj = new Date(tx.date);
                 const monthYear = dateObj.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
-                
+
                 if (monthYear !== currentMonthGroup) {
                     currentMonthGroup = monthYear;
                     const parts = monthYear.split(' ');
@@ -344,7 +344,7 @@
                     html += `
                         <div class="month-header" style="background: #f1f3f4; padding: 16px 24px 8px; margin-top: 8px;">
                             <div style="font-size: 13px; font-weight: 700; color: #5f6368;">${parts[1]}</div>
-                            <div style="font-size: 22px; font-weight: 700; color: #202124;">${parts[0]}</div>
+                            <div style="font-size: 22px; font-weight: 700; color: #38393aff;">${parts[0]}</div>
                         </div>
                     `;
                 }
@@ -366,7 +366,7 @@
             </div>
             `;
         });
-        
+
         container.innerHTML = html;
 
         setTimeout(() => animateListItems(container, '.transaction-item'), 100);
@@ -484,7 +484,7 @@
             if (parts[1] && parts[1].length > 2) val = parts[0] + '.' + parts[1].substring(0, 2);
             e.target.value = val;
             payAmount = val;
-            
+
             // Flex input hug
             e.target.style.width = (Math.max(1, val.length) + 0.2) + 'ch';
 
@@ -512,7 +512,7 @@
         // Edit Payee feature
         $('#btn-edit-payee').addEventListener('click', () => {
             if (!currentPayee) return;
-            
+
             // Clear values so placeholders show
             $('#edit-payee-name').value = '';
             $('#edit-payee-bank').value = '';
@@ -524,7 +524,7 @@
             $('#edit-payee-bank').placeholder = $('#payee-banking-name').textContent || 'Banking Name';
             $('#edit-payee-upi').placeholder = currentPayee.upiId || 'UPI ID';
             $('#edit-payee-initials').placeholder = currentPayee.initials || 'IN';
-            
+
             const colorSelect = $('#edit-payee-color');
             let found = false;
             Array.from(colorSelect.options).forEach(opt => {
@@ -548,7 +548,7 @@
             currentPayee.upiId = $('#edit-payee-upi').value.trim() || currentPayee.upiId;
             currentPayee.initials = $('#edit-payee-initials').value.trim().toUpperCase() || currentPayee.initials;
             currentPayee.color = $('#edit-payee-color').value;
-            
+
             const bankingName = $('#edit-payee-bank').value.trim() || $('#payee-banking-name').textContent;
 
             $('#payee-name').textContent = currentPayee.name;
