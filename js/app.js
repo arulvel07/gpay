@@ -500,12 +500,16 @@
         // Show result
         setTimeout(async () => {
             resultScreen.classList.remove('hidden');
-            fadeIn(resultScreen);
+            resultScreen.style.display = '';
+            resultScreen.style.opacity = '1';
 
             if (isSuccess) {
                 // Play GPay payment sound
-                const paySound = new Audio('gpay sound.mp3');
-                paySound.play().catch(() => { });
+                try {
+                    const paySound = new Audio('gpay sound.mp3');
+                    paySound.play().catch(() => { });
+                } catch (e) { }
+
                 resultContent.innerHTML = `
                     <div class="result-main-content">
                         <div class="result-icon-circle success">
@@ -529,20 +533,24 @@
                     </div>
                 `;
 
-                // Save transaction to Supabase & deduct balance
-                await SupabaseDB.saveTransaction({
-                    id: APP_DATA.transactions.length + 1,
-                    type: 'sent',
-                    name: payee.name,
-                    initials: payee.initials,
-                    color: payee.color || '#4285F4',
-                    amount: amount,
-                    upiId: payee.upiId || '',
-                    date: new Date().toISOString(),
-                    note: noteVal,
-                    status: 'completed'
-                });
-                await SupabaseDB.updateBalance(amount);
+                // Save to Supabase (don't block UI)
+                try {
+                    await SupabaseDB.saveTransaction({
+                        id: Date.now(),
+                        type: 'sent',
+                        name: payee.name,
+                        initials: payee.initials,
+                        color: payee.color || '#4285F4',
+                        amount: amount,
+                        upiId: payee.upiId || '',
+                        date: new Date().toISOString(),
+                        note: noteVal,
+                        status: 'completed'
+                    });
+                    await SupabaseDB.updateBalance(amount);
+                } catch (dbErr) {
+                    console.error('DB save error:', dbErr);
+                }
             } else {
                 resultContent.innerHTML = `
                     <div class="result-main-content">
@@ -560,35 +568,43 @@
                 `;
             }
 
-            // Result actions
-            setTimeout(() => {
-                const doneBtn = $('#btn-result-done');
-                const retryBtn = $('#btn-result-retry');
+            // Attach event listeners IMMEDIATELY after innerHTML
+            const doneBtn = document.getElementById('btn-result-done');
+            const retryBtn = document.getElementById('btn-result-retry');
 
-                if (doneBtn) {
-                    doneBtn.addEventListener('click', () => {
-                        fadeOut(resultScreen);
-                        setTimeout(() => {
-                            resultScreen.classList.add('hidden');
-                            renderHome();
-                            renderHistory();
-                        }, 300);
-                    });
-                }
+            if (doneBtn) {
+                doneBtn.addEventListener('click', () => {
+                    // Hide result screen completely
+                    resultScreen.style.opacity = '0';
+                    resultScreen.style.transition = 'opacity 300ms ease';
+                    setTimeout(() => {
+                        resultScreen.style.display = 'none';
+                        resultScreen.classList.add('hidden');
+                        resultScreen.style.opacity = '';
+                        resultScreen.style.transition = '';
+                        // Return to home
+                        showScreen('home');
+                        renderHome();
+                        renderHistory();
+                    }, 300);
+                });
+            }
 
-                if (retryBtn) {
-                    retryBtn.addEventListener('click', () => {
-                        fadeOut(resultScreen);
-                        setTimeout(() => {
-                            resultScreen.classList.add('hidden');
-                            startPayment(payee);
-                        }, 300);
-                    });
-                }
+            if (retryBtn) {
+                retryBtn.addEventListener('click', () => {
+                    resultScreen.style.opacity = '0';
+                    resultScreen.style.transition = 'opacity 300ms ease';
+                    setTimeout(() => {
+                        resultScreen.style.display = 'none';
+                        resultScreen.classList.add('hidden');
+                        resultScreen.style.opacity = '';
+                        resultScreen.style.transition = '';
+                        startPayment(payee);
+                    }, 300);
+                });
+            }
 
-                initRipples();
-            }, 100);
-
+            initRipples();
         }, 600);
     }
 

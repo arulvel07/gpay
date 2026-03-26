@@ -31,9 +31,7 @@ const APP_DATA = {
         { id: 10, name: "Meera Iyer", initials: "MI", upiId: "meera@paytm", phone: "+91 10987 65432", color: "#795548" },
     ],
 
-    transactions: [
-
-    ],
+    transactions: [],
 
     businesses: [
         { id: 1, name: "Swiggy", initials: "SW", upiId: "swiggy@hdfcbank", color: "#FC8019", category: "Food" },
@@ -109,14 +107,15 @@ function getTimeAgo(dateStr) {
 // ============================================================
 // Supabase Database Functions
 // ============================================================
-// These functions read/write to Supabase if configured,
-// otherwise fall back to local APP_DATA.
 
 const SupabaseDB = {
 
     // Fetch all transactions from Supabase, newest first
     async fetchTransactions() {
-        if (!isSupabaseConfigured()) return APP_DATA.transactions;
+        if (!isSupabaseConfigured()) {
+            console.log('Supabase not configured, using local transactions');
+            return APP_DATA.transactions;
+        }
 
         try {
             const { data, error } = await supabase
@@ -126,7 +125,6 @@ const SupabaseDB = {
 
             if (error) throw error;
 
-            // Map DB rows to app format
             const mapped = (data || []).map(row => ({
                 id: row.id,
                 type: row.type,
@@ -140,56 +138,58 @@ const SupabaseDB = {
                 status: row.status || 'completed'
             }));
 
-            // Sync to local data
             if (mapped.length > 0) {
                 APP_DATA.transactions = mapped;
             }
+            console.log('✅ Fetched', mapped.length, 'transactions from Supabase');
             return APP_DATA.transactions;
         } catch (err) {
-            console.error('Supabase fetchTransactions error:', err);
-            alert('Supabase Error (Transactions):\n' + (err.message || JSON.stringify(err)) + '\n\nAre your table names correct and RLS policies disabled?');
+            console.error('❌ Supabase fetchTransactions error:', err);
             return APP_DATA.transactions;
         }
     },
 
     // Fetch balance from Supabase
     async fetchBalance() {
-        if (!isSupabaseConfigured()) return APP_DATA.user.bank.balance;
+        if (!isSupabaseConfigured()) {
+            console.log('Supabase not configured, using local balance');
+            return APP_DATA.user.bank.balance;
+        }
 
         try {
             const { data, error } = await supabase
                 .from('user_balance')
                 .select('balance')
                 .limit(1)
-                .maybeSingle(); // Use maybeSingle to avoid throw on 0 rows
+                .maybeSingle();
 
             if (error) throw error;
 
             if (!data) {
                 // Table is empty, insert initial row
-                await supabase.from('user_balance').insert({ balance: 4532.00 });
-                return 4532.00;
+                console.log('No balance row found, inserting initial balance');
+                await supabase.from('user_balance').insert({ balance: APP_DATA.user.bank.balance });
+                return APP_DATA.user.bank.balance;
             }
 
-            const balance = data.balance ?? APP_DATA.user.bank.balance;
-            APP_DATA.user.bank.balance = balance;
-            return balance;
+            APP_DATA.user.bank.balance = data.balance;
+            console.log('✅ Fetched balance from Supabase:', data.balance);
+            return data.balance;
         } catch (err) {
-            console.error('Supabase fetchBalance error:', err);
-            alert('Supabase Error (Balance):\n' + (err.message || JSON.stringify(err)) + '\n\nMake sure the user_balance table exists and RLS is disabled!');
+            console.error('❌ Supabase fetchBalance error:', err);
             return APP_DATA.user.bank.balance;
         }
     },
 
     // Save a new transaction to Supabase
     async saveTransaction(txn) {
-        // Always add to local data
+        // Always add to local data first
         APP_DATA.transactions.unshift(txn);
 
         if (!isSupabaseConfigured()) return txn;
 
         try {
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('transactions')
                 .insert({
                     type: txn.type,
@@ -200,15 +200,13 @@ const SupabaseDB = {
                     upi_id: txn.upiId || '',
                     note: txn.note || '',
                     status: txn.status || 'completed'
-                })
-                .select()
-                .single();
+                });
 
             if (error) throw error;
-            return data;
+            console.log('✅ Transaction saved to Supabase');
+            return txn;
         } catch (err) {
-            console.error('Supabase saveTransaction error:', err);
-            alert('Failed to save payment to Supabase:\n' + (err.message || JSON.stringify(err)));
+            console.error('❌ Supabase saveTransaction error:', err);
             return txn;
         }
     },
@@ -221,8 +219,7 @@ const SupabaseDB = {
         if (!isSupabaseConfigured()) return newBalance;
 
         try {
-            // First find the row to update
-            const { data: fetchRow, error: fetchErr } = await supabase
+            const { data: rows, error: fetchErr } = await supabase
                 .from('user_balance')
                 .select('id')
                 .limit(1)
@@ -230,25 +227,23 @@ const SupabaseDB = {
 
             if (fetchErr) throw fetchErr;
 
-            if (fetchRow) {
-                // Update the existing row
+            if (rows) {
                 const { error } = await supabase
                     .from('user_balance')
                     .update({ balance: newBalance, updated_at: new Date().toISOString() })
-                    .eq('id', fetchRow.id);
+                    .eq('id', rows.id);
                 if (error) throw error;
             } else {
-                // No row exists, insert one
                 const { error } = await supabase
                     .from('user_balance')
                     .insert({ balance: newBalance });
                 if (error) throw error;
             }
 
+            console.log('✅ Balance updated in Supabase:', newBalance);
             return newBalance;
         } catch (err) {
-            console.error('Supabase updateBalance error:', err);
-            alert('Failed to deduct balance from Supabase:\n' + (err.message || JSON.stringify(err)));
+            console.error('❌ Supabase updateBalance error:', err);
             return newBalance;
         }
     }
