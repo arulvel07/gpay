@@ -97,9 +97,7 @@
     }
 
     function showScreen(name) {
-        // Hide bottom-nav screens
         const tabScreens = ['home', 'history', 'offers', 'profile'];
-
         tabScreens.forEach(s => {
             const el = $(`#screen-${s}`);
             if (s === name) {
@@ -110,7 +108,6 @@
                 el.classList.remove('active');
             }
         });
-
         currentScreen = name;
     }
 
@@ -139,14 +136,12 @@
             </div>
         `).join('');
 
-        // Quick action click handlers
         grid.querySelectorAll('.quick-action-item').forEach(item => {
             item.addEventListener('click', () => {
                 const action = item.dataset.action;
                 if (action === 'scan') {
                     openScanner();
                 } else if (action === 'pay-contacts') {
-                    // Show first contact as payment
                     startPayment(APP_DATA.contacts[0]);
                 } else if (action === 'pay-phone') {
                     startPayment({ name: 'Phone Number', initials: 'PN', upiId: 'Enter number', color: '#34A853' });
@@ -164,7 +159,7 @@
         // People scroll
         const peopleScroll = $('#people-scroll');
         peopleScroll.innerHTML = APP_DATA.contacts.map(contact => `
-            <div class="person-item ripple" data-contact-id="${contact.id}">
+            <div class="person-item ripple" data-upi-id="${contact.upiId}">
                 <div class="person-avatar" style="background: ${contact.color};">${contact.initials}</div>
                 <span class="person-name">${contact.name.split(' ')[0]}</span>
             </div>
@@ -172,8 +167,8 @@
 
         peopleScroll.querySelectorAll('.person-item').forEach(item => {
             item.addEventListener('click', () => {
-                const id = parseInt(item.dataset.contactId);
-                const contact = APP_DATA.contacts.find(c => c.id === id);
+                const upiId = item.dataset.upiId;
+                const contact = APP_DATA.contacts.find(c => c.upiId === upiId);
                 if (contact) startPayment(contact);
             });
         });
@@ -218,7 +213,6 @@
             </div>
         `).join('');
 
-        // Animate items
         setTimeout(() => animateListItems(container, '.transaction-item'), 100);
     }
 
@@ -231,7 +225,6 @@
 
         renderTransactionList('#history-transactions', transactions);
 
-        // Filter chips
         $$('.filter-chip').forEach(chip => {
             chip.classList.toggle('active', chip.dataset.filter === filter);
             chip.onclick = () => renderHistory(chip.dataset.filter);
@@ -261,7 +254,6 @@
             if (!balanceVisible) {
                 balanceVisible = true;
                 const display = $('#balance-display');
-                // Fetch latest balance from Supabase
                 const balance = await SupabaseDB.fetchBalance();
                 animateNumber(display, balance);
                 $('#btn-check-balance').textContent = 'Hide balance';
@@ -310,7 +302,6 @@
         closeScanner();
 
         if (upiData) {
-            // UPI QR detected — start payment
             const payee = {
                 name: upiData.pn || 'Unknown Payee',
                 initials: (upiData.pn || 'UP').substring(0, 2).toUpperCase(),
@@ -321,18 +312,15 @@
             };
             setTimeout(() => startPayment(payee, upiData.am, upiData.tn), 400);
         } else {
-            // Non-UPI QR — show raw text
             alert(`QR Code Detected:\n${rawText}\n\n(Not a UPI QR code)`);
         }
     }
 
     // ---------- Payment Flow ----------
     function setupPaymentFlow() {
-        // Amount input validation
         const amountInput = $('#amount-input');
         amountInput.addEventListener('input', (e) => {
             let val = e.target.value.replace(/[^0-9.]/g, '');
-            // Allow only one decimal
             const parts = val.split('.');
             if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
             if (parts[1] && parts[1].length > 2) val = parts[0] + '.' + parts[1].substring(0, 2);
@@ -343,7 +331,6 @@
             const hasAmount = val && parseFloat(val) > 0;
             payBtn.disabled = !hasAmount;
 
-            // Update Pay button text
             if (hasAmount) {
                 const amt = parseFloat(val);
                 $('#pay-btn-amount').textContent = '₹' + (Number.isInteger(amt) ? amt : amt.toFixed(2));
@@ -352,29 +339,27 @@
             }
         });
 
-        // Pay button
         $('#btn-pay').addEventListener('click', () => {
             if (!payAmount || parseFloat(payAmount) <= 0) return;
             showPinScreen();
         });
 
-        // Payment back
         $('#btn-payment-back').addEventListener('click', () => {
             hideOverlay('payment');
         });
     }
 
-    function startPayment(contact, prefillAmount = '', prefillNote = '') {
+    function startPayment(contact, prefillAmount, prefillNote) {
+        prefillAmount = prefillAmount || '';
+        prefillNote = prefillNote || '';
         currentPayee = contact;
 
-        // Update payment screen
         $('#payee-initials').textContent = contact.initials;
         $('#payee-avatar').style.background = contact.color || '#9aa0a6';
         $('#payee-name').textContent = contact.name;
         $('#payee-banking-name').textContent = contact.name;
         $('#payee-upi-display').textContent = contact.upiId || '';
 
-        // Bank info in bottom sheet
         $('#sheet-bank-name').textContent = APP_DATA.user.bank.name + ' ••••' + APP_DATA.user.bank.account.slice(-4);
 
         const amountInput = $('#amount-input');
@@ -407,7 +392,7 @@
             key.addEventListener('click', () => {
                 const val = key.dataset.key;
 
-                if (key.id === 'btn-confirm-pin') return; // handled separately
+                if (key.id === 'btn-confirm-pin') return;
                 if (val === 'back') {
                     pinValue = pinValue.slice(0, -1);
                 } else if (val === '' || val === undefined) {
@@ -418,7 +403,6 @@
 
                 updatePinDots();
 
-                // Enable Pay when 6 digits
                 if (pinValue.length === 6) {
                     $('#btn-confirm-pin').disabled = false;
                 } else {
@@ -443,7 +427,6 @@
         updatePinDots();
         $('#btn-confirm-pin').disabled = true;
 
-        // Populate payment summary
         const amount = parseFloat(payAmount);
         $('#pin-pay-amount').textContent = '₹' + amount.toFixed(2);
         $('#pin-payee-name').textContent = currentPayee.name;
@@ -483,29 +466,23 @@
         hideOverlay('pin');
         setTimeout(() => hideOverlay('payment'), 100);
 
-        // Format date like "26 March 2026, 12:27 am"
+        // Format date
         const now = new Date();
         const formattedDate = now.toLocaleDateString('en-IN', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
+            day: 'numeric', month: 'long', year: 'numeric'
         }) + ', ' + now.toLocaleTimeString('en-IN', {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true
+            hour: 'numeric', minute: '2-digit', hour12: true
         });
 
-        // Format amount like ₹1.00
         const formattedAmount = '₹' + amount.toFixed(2);
 
-        // Show result
-        setTimeout(async () => {
+        // Show result — NO async here, listeners attach instantly
+        setTimeout(() => {
             resultScreen.classList.remove('hidden');
             resultScreen.style.display = '';
             resultScreen.style.opacity = '1';
 
             if (isSuccess) {
-                // Play GPay payment sound
                 try {
                     const paySound = new Audio('gpay sound.mp3');
                     paySound.play().catch(() => { });
@@ -534,34 +511,35 @@
                     </div>
                 `;
 
-                // Save to Supabase (don't block UI)
-                try {
-                    await SupabaseDB.saveTransaction({
-                        id: Date.now(),
-                        type: 'sent',
-                        name: payee.name,
-                        initials: payee.initials,
-                        color: payee.color || '#4285F4',
-                        amount: amount,
-                        upiId: payee.upiId || '',
-                        date: new Date().toISOString(),
-                        note: noteVal,
-                        status: 'completed'
-                    });
-                    await SupabaseDB.updateBalance(amount);
+                // Fire Supabase saves in BACKGROUND — don't block UI
+                (async () => {
+                    try {
+                        await SupabaseDB.saveTransaction({
+                            id: Date.now(),
+                            type: 'sent',
+                            name: payee.name,
+                            initials: payee.initials,
+                            color: payee.color || '#4285F4',
+                            amount: amount,
+                            upiId: payee.upiId || '',
+                            date: new Date().toISOString(),
+                            note: noteVal,
+                            status: 'completed'
+                        });
+                        await SupabaseDB.updateBalance(amount);
+                        await SupabaseDB.saveContact({
+                            id: Date.now(),
+                            name: payee.name,
+                            initials: payee.initials,
+                            upiId: payee.upiId || '',
+                            phone: '',
+                            color: payee.color || '#9AA0A6'
+                        });
+                    } catch (dbErr) {
+                        console.error('DB save error:', dbErr);
+                    }
+                })();
 
-                    // Auto-save contact
-                    await SupabaseDB.saveContact({
-                        id: Date.now(),
-                        name: payee.name,
-                        initials: payee.initials,
-                        upiId: payee.upiId || '',
-                        phone: '',
-                        color: payee.color || '#9AA0A6'
-                    });
-                } catch (dbErr) {
-                    console.error('DB save error:', dbErr);
-                }
             } else {
                 resultContent.innerHTML = `
                     <div class="result-main-content">
@@ -579,13 +557,12 @@
                 `;
             }
 
-            // Attach event listeners IMMEDIATELY after innerHTML
+            // Attach event listeners IMMEDIATELY (not blocked by Supabase)
             const doneBtn = document.getElementById('btn-result-done');
             const retryBtn = document.getElementById('btn-result-retry');
 
             if (doneBtn) {
                 doneBtn.addEventListener('click', () => {
-                    // Hide result screen completely
                     resultScreen.style.opacity = '0';
                     resultScreen.style.transition = 'opacity 300ms ease';
                     setTimeout(() => {
@@ -593,7 +570,6 @@
                         resultScreen.classList.add('hidden');
                         resultScreen.style.opacity = '';
                         resultScreen.style.transition = '';
-                        // Return to home
                         showScreen('home');
                         renderHome();
                         renderHistory();

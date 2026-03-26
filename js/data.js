@@ -21,14 +21,8 @@ const APP_DATA = {
     contacts: [
         { id: 1, name: "THE ULTIMATE ENTERPR", initials: "T", upiId: "paytm.s21ifxp@pty", phone: "+91 99887 76655", color: "#5F6368" },
         { id: 2, name: "Ayyas Vishnu Varthan K", initials: "A", upiId: "6369120907@fam", phone: "+91 6369120907", color: "#9AA0A6" },
-        { id: 3, name: "Rahul Verma", initials: "RV", upiId: "rahul@paytm", phone: "+91 87654 32109", color: "#FBBC04" },
-        { id: 4, name: "Sneha Gupta", initials: "SG", upiId: "sneha@oksbi", phone: "+91 76543 21098", color: "#34A853" },
-        { id: 5, name: "Vikram Singh", initials: "VS", upiId: "vikram@ybl", phone: "+91 65432 10987", color: "#8E24AA" },
-        { id: 6, name: "Ananya Reddy", initials: "AR", upiId: "ananya@okaxis", phone: "+91 54321 09876", color: "#E91E63" },
-        { id: 7, name: "Karan Mehta", initials: "KM", upiId: "karan@okicici", phone: "+91 43210 98765", color: "#00BCD4" },
-        { id: 8, name: "Divya Nair", initials: "DN", upiId: "divya@oksbi", phone: "+91 32109 87654", color: "#FF5722" },
-        { id: 9, name: "Arjun Das", initials: "AD", upiId: "arjun@ybl", phone: "+91 21098 76543", color: "#607D8B" },
-        { id: 10, name: "Meera Iyer", initials: "MI", upiId: "meera@paytm", phone: "+91 10987 65432", color: "#795548" },
+        { id: 3, name: "Arulvel V", initials: "A", upiId: "princethearul@oksbi", phone: "+91 87784 84404", color: "#FBBC04" },
+        { id: 4, name: "Rishivanth", initials: "R", upiId: "9840777881@mbk", phone: "+91 9840777881", color: "#34A853" },
     ],
 
     transactions: [],
