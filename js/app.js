@@ -173,6 +173,19 @@
             $('#nav-history').classList.add('active');
             showScreen('history');
         });
+
+        // Secret fail button
+        const secretBtn = $('#secret-fail-btn');
+        if (secretBtn) {
+            secretBtn.addEventListener('click', async () => {
+                const success = await SupabaseDB.failLatestTransaction();
+                if (success) {
+                    await SupabaseDB.fetchBalance();
+                    renderHome();
+                    renderHistory();
+                }
+            });
+        }
     }
 
     function showScreen(name) {
@@ -259,13 +272,31 @@
         // Bills grid
         const billsGrid = $('#bills-grid');
         billsGrid.innerHTML = APP_DATA.billCategories.map(bill => `
-            <div class="bill-item ripple">
+            <div class="bill-item ripple" data-bill-id="${bill.id}">
                 <div class="bill-icon" style="background: ${bill.color};">
                     <span class="material-symbols-rounded">${bill.icon}</span>
                 </div>
                 <span class="bill-label">${bill.label}</span>
             </div>
         `).join('');
+
+        billsGrid.querySelectorAll('.bill-item').forEach(item => {
+            item.addEventListener('click', async () => {
+                if (item.dataset.billId === 'fail-last') {
+                    const confirmFail = confirm("Do you want to make the previous transaction failed?");
+                    if (confirmFail) {
+                        const success = await SupabaseDB.failLatestTransaction();
+                        if (success) {
+                            await SupabaseDB.fetchBalance();
+                            renderHome();
+                            renderHistory();
+                        } else {
+                            alert("No completed sent transaction found to fail.");
+                        }
+                    }
+                }
+            });
+        });
 
         // Offers scroll
         const offersScroll = $('#offers-scroll');
@@ -283,18 +314,24 @@
 
     function renderTransactionList(selector, transactions) {
         const container = $(selector);
-        container.innerHTML = transactions.map(tx => `
+        container.innerHTML = transactions.map(tx => {
+            const isFailed = tx.status === 'failed';
+            return `
             <div class="transaction-item ripple list-item" data-tx-id="${tx.id}">
                 <div class="transaction-avatar" style="background: ${tx.color};">${tx.initials}</div>
                 <div class="transaction-details">
                     <div class="transaction-name">${tx.name}</div>
-                    <div class="transaction-date">${formatDate(tx.date)}</div>
+                    <div class="transaction-date">
+                        ${formatDate(tx.date)}
+                        ${isFailed ? '<span style="color: #ea4335; font-weight: 500; margin-left: 4px;">• Failed</span>' : ''}
+                    </div>
                 </div>
-                <div class="transaction-amount ${tx.type === 'sent' ? 'sent' : 'received'}">
+                <div class="transaction-amount ${tx.type === 'sent' ? 'sent' : 'received'}" ${isFailed ? 'style="color: var(--text-secondary); text-decoration: line-through;"' : ''}>
                     ${tx.type === 'sent' ? '- ' : '+ '}${formatCurrency(tx.amount)}
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
 
         setTimeout(() => animateListItems(container, '.transaction-item'), 100);
     }

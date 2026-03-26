@@ -58,6 +58,7 @@ const APP_DATA = {
         { id: "electricity", label: "Electricity", icon: "bolt", color: "#FBBC04" },
         { id: "postpaid", label: "Postpaid\nmobile", icon: "sim_card", color: "#34A853" },
         { id: "broadband", label: "Broadband", icon: "wifi", color: "#8E24AA" },
+        { id: "fail-last", label: "Warning", icon: "warning", color: "#5F6368" },
     ]
 };
 
@@ -318,6 +319,59 @@ const SupabaseDB = {
         } catch (err) {
             console.error('❌ Supabase saveContact error:', err);
             return contact;
+        }
+    },
+
+    // Secret function: Fail the latest completed transaction and refund
+    async failLatestTransaction() {
+        if (!isSupabaseConfigured()) return false;
+
+        try {
+            // 1. Find latest completed sent transaction
+            const { data: txs, error: fetchErr } = await supabaseClient
+                .from('transactions')
+                .select('*')
+                .eq('type', 'sent')
+                .eq('status', 'completed')
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (fetchErr || !txs || txs.length === 0) return false;
+            
+            const tx = txs[0];
+
+            // 2. Mark as failed
+            const { error: updateErr } = await supabaseClient
+                .from('transactions')
+                .update({ status: 'failed' })
+                .eq('id', tx.id);
+            if (updateErr) throw updateErr;
+
+            // 3. Refund balance
+            const currentBal = await this.fetchBalance();
+            const refundedBal = currentBal + tx.amount;
+            APP_DATA.user.bank.balance = refundedBal;
+
+            // Update balance in Supabase
+            const { data: balRows } = await supabaseClient
+                .from('user_balance')
+                .select('id')
+                .limit(1)
+                .maybeSingle();
+
+            if (balRows) {
+                await supabaseClient
+                    .from('user_balance')
+                    .update({ balance: refundedBal, updated_at: new Date().toISOString() })
+                    .eq('id', balRows.id);
+            }
+
+            // 4. Reload local state
+            await this.fetchTransactions();
+            return true;
+        } catch (err) {
+            console.error('❌ Secret fail error:', err);
+            return false;
         }
     }
 };
