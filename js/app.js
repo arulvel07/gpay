@@ -22,6 +22,7 @@
             // Load data from Supabase (or fallback to local)
             await SupabaseDB.fetchTransactions();
             await SupabaseDB.fetchBalance();
+            await SupabaseDB.fetchContacts();
         } catch (err) {
             console.error('Failed to init Supabase data, falling back to local:', err);
         }
@@ -548,6 +549,16 @@
                         status: 'completed'
                     });
                     await SupabaseDB.updateBalance(amount);
+
+                    // Auto-save contact
+                    await SupabaseDB.saveContact({
+                        id: Date.now(),
+                        name: payee.name,
+                        initials: payee.initials,
+                        upiId: payee.upiId || '',
+                        phone: '',
+                        color: payee.color || '#9AA0A6'
+                    });
                 } catch (dbErr) {
                     console.error('DB save error:', dbErr);
                 }

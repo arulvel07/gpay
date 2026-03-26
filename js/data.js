@@ -19,8 +19,8 @@ const APP_DATA = {
     },
 
     contacts: [
-        { id: 1, name: "THE ULTIMATE ENTERPR", initials: "T", upiId: "paytm.s21ifxp@pty", phone: "+91 99887 76655", color: "#9AA0A6" },
-        { id: 2, name: "Priya Patel", initials: "PP", upiId: "priya@okicici", phone: "+91 98776 54321", color: "#EA4335" },
+        { id: 1, name: "THE ULTIMATE ENTERPR", initials: "T", upiId: "paytm.s21ifxp@pty", phone: "+91 99887 76655", color: "#5F6368" },
+        { id: 2, name: "Ayyas Vishnu Varthan K", initials: "A", upiId: "6369120907@fam", phone: "+91 6369120907", color: "#9AA0A6" },
         { id: 3, name: "Rahul Verma", initials: "RV", upiId: "rahul@paytm", phone: "+91 87654 32109", color: "#FBBC04" },
         { id: 4, name: "Sneha Gupta", initials: "SG", upiId: "sneha@oksbi", phone: "+91 76543 21098", color: "#34A853" },
         { id: 5, name: "Vikram Singh", initials: "VS", upiId: "vikram@ybl", phone: "+91 65432 10987", color: "#8E24AA" },
@@ -245,6 +245,85 @@ const SupabaseDB = {
         } catch (err) {
             console.error('❌ Supabase updateBalance error:', err);
             return newBalance;
+        }
+    },
+
+    // Fetch contacts from Supabase and merge with local
+    async fetchContacts() {
+        if (!isSupabaseConfigured()) return APP_DATA.contacts;
+
+        try {
+            const { data, error } = await supabaseClient
+                .from('contacts')
+                .select('*')
+                .order('name', { ascending: true });
+
+            if (error) throw error;
+
+            const dbContacts = (data || []).map(row => ({
+                id: row.id,
+                name: row.name,
+                initials: row.initials,
+                upiId: row.upi_id,
+                phone: row.phone || '',
+                color: row.color || '#9AA0A6'
+            }));
+
+            // Merge: add DB contacts that aren't already in local list (by upiId)
+            const localUpiIds = new Set(APP_DATA.contacts.map(c => c.upiId));
+            dbContacts.forEach(c => {
+                if (!localUpiIds.has(c.upiId)) {
+                    APP_DATA.contacts.push(c);
+                }
+            });
+
+            console.log('✅ Fetched', dbContacts.length, 'contacts from Supabase');
+            return APP_DATA.contacts;
+        } catch (err) {
+            console.error('❌ Supabase fetchContacts error:', err);
+            return APP_DATA.contacts;
+        }
+    },
+
+    // Save a new contact to Supabase (skip if already exists)
+    async saveContact(contact) {
+        // Check if already in local contacts
+        const exists = APP_DATA.contacts.some(c => c.upiId === contact.upiId);
+        if (!exists) {
+            APP_DATA.contacts.push(contact);
+        }
+
+        if (!isSupabaseConfigured()) return contact;
+
+        try {
+            // Check if contact already exists in DB by upi_id
+            const { data: existing } = await supabaseClient
+                .from('contacts')
+                .select('id')
+                .eq('upi_id', contact.upiId)
+                .maybeSingle();
+
+            if (existing) {
+                console.log('Contact already exists in Supabase:', contact.upiId);
+                return contact;
+            }
+
+            const { error } = await supabaseClient
+                .from('contacts')
+                .insert({
+                    name: contact.name,
+                    initials: contact.initials,
+                    upi_id: contact.upiId,
+                    phone: contact.phone || '',
+                    color: contact.color || '#9AA0A6'
+                });
+
+            if (error) throw error;
+            console.log('✅ Contact saved to Supabase:', contact.name);
+            return contact;
+        } catch (err) {
+            console.error('❌ Supabase saveContact error:', err);
+            return contact;
         }
     }
 };
