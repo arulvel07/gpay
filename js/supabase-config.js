@@ -5,11 +5,11 @@
 const SUPABASE_URL = 'https://fxqldchdtwrbotrncpwj.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Lp648102fJQI9DHARoWOVQ_36-sHF56';
 
-// Initialize Supabase client (safely — if CDN fails, app still works)
-let supabase = null;
+// Initialize Supabase client (use different name to avoid conflict with CDN global)
+var supabaseClient = null;
 try {
     if (window.supabase && window.supabase.createClient) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         console.log('✅ Supabase client initialized');
     } else {
         console.warn('⚠️ Supabase CDN not loaded, falling back to local data');
@@ -19,8 +19,8 @@ try {
 }
 
 // Check if Supabase is configured and available
-const isSupabaseConfigured = () => {
-    return supabase !== null &&
+function isSupabaseConfigured() {
+    return supabaseClient !== null &&
         SUPABASE_URL && SUPABASE_URL.startsWith('http') &&
         SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.length > 20;
-};
+}

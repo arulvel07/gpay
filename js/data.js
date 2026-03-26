@@ -118,7 +118,7 @@ const SupabaseDB = {
         }
 
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('transactions')
                 .select('*')
                 .order('created_at', { ascending: false });
@@ -157,7 +157,7 @@ const SupabaseDB = {
         }
 
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('user_balance')
                 .select('balance')
                 .limit(1)
@@ -168,7 +168,7 @@ const SupabaseDB = {
             if (!data) {
                 // Table is empty, insert initial row
                 console.log('No balance row found, inserting initial balance');
-                await supabase.from('user_balance').insert({ balance: APP_DATA.user.bank.balance });
+                await supabaseClient.from('user_balance').insert({ balance: APP_DATA.user.bank.balance });
                 return APP_DATA.user.bank.balance;
             }
 
@@ -189,7 +189,7 @@ const SupabaseDB = {
         if (!isSupabaseConfigured()) return txn;
 
         try {
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('transactions')
                 .insert({
                     type: txn.type,
@@ -219,7 +219,7 @@ const SupabaseDB = {
         if (!isSupabaseConfigured()) return newBalance;
 
         try {
-            const { data: rows, error: fetchErr } = await supabase
+            const { data: rows, error: fetchErr } = await supabaseClient
                 .from('user_balance')
                 .select('id')
                 .limit(1)
@@ -228,13 +228,13 @@ const SupabaseDB = {
             if (fetchErr) throw fetchErr;
 
             if (rows) {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('user_balance')
                     .update({ balance: newBalance, updated_at: new Date().toISOString() })
                     .eq('id', rows.id);
                 if (error) throw error;
             } else {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('user_balance')
                     .insert({ balance: newBalance });
                 if (error) throw error;
