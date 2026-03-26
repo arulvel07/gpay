@@ -971,10 +971,12 @@ ul, ol { list-style: none; }
     background: transparent;
     border: none;
     outline: none;
-    width: 180px;
+    width: 1ch;
     text-align: left;
-    caret-color: #e8eaed;
+    caret-color: #8ab4f8;
     font-family: inherit;
+    padding: 0;
+    margin-left: 4px;
 }
 
 .pay-amount-input::placeholder {

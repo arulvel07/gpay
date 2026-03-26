@@ -342,9 +342,9 @@
                     const parts = monthYear.split(' ');
                     // parts[0] is Month, parts[1] is Year
                     html += `
-                        <div class="month-header" style="padding: 16px 24px 8px; margin-top: 8px;">
-                            <div style="font-size: 13px; font-weight: 500; color: #9AA0A6;">${parts[1]}</div>
-                            <div style="font-size: 22px; font-weight: 500; color: #E8EAED;">${parts[0]}</div>
+                        <div class="month-header" style="background: #f1f3f4; padding: 16px 24px 8px; margin-top: 8px;">
+                            <div style="font-size: 13px; font-weight: 700; color: #5f6368;">${parts[1]}</div>
+                            <div style="font-size: 22px; font-weight: 700; color: #202124;">${parts[0]}</div>
                         </div>
                     `;
                 }
@@ -484,6 +484,9 @@
             if (parts[1] && parts[1].length > 2) val = parts[0] + '.' + parts[1].substring(0, 2);
             e.target.value = val;
             payAmount = val;
+            
+            // Flex input hug
+            e.target.style.width = (Math.max(1, val.length) + 0.2) + 'ch';
 
             const payBtn = $('#btn-pay');
             const hasAmount = val && parseFloat(val) > 0;
@@ -504,6 +507,57 @@
 
         $('#btn-payment-back').addEventListener('click', () => {
             hideOverlay('payment');
+        });
+
+        // Edit Payee feature
+        $('#btn-edit-payee').addEventListener('click', () => {
+            if (!currentPayee) return;
+            
+            // Clear values so placeholders show
+            $('#edit-payee-name').value = '';
+            $('#edit-payee-bank').value = '';
+            $('#edit-payee-upi').value = '';
+            $('#edit-payee-initials').value = '';
+
+            // Set placeholders to current values
+            $('#edit-payee-name').placeholder = currentPayee.name || 'Name';
+            $('#edit-payee-bank').placeholder = $('#payee-banking-name').textContent || 'Banking Name';
+            $('#edit-payee-upi').placeholder = currentPayee.upiId || 'UPI ID';
+            $('#edit-payee-initials').placeholder = currentPayee.initials || 'IN';
+            
+            const colorSelect = $('#edit-payee-color');
+            let found = false;
+            Array.from(colorSelect.options).forEach(opt => {
+                if (opt.value.toUpperCase() === (currentPayee.color || '').toUpperCase()) {
+                    opt.selected = true;
+                    found = true;
+                }
+            });
+            if (!found) colorSelect.selectedIndex = 0;
+
+            $('#modal-edit-payee').style.display = 'flex';
+        });
+
+        $('#btn-edit-payee-cancel').addEventListener('click', () => {
+            $('#modal-edit-payee').style.display = 'none';
+        });
+
+        $('#btn-edit-payee-save').addEventListener('click', () => {
+            if (!currentPayee) return;
+            currentPayee.name = $('#edit-payee-name').value.trim() || currentPayee.name;
+            currentPayee.upiId = $('#edit-payee-upi').value.trim() || currentPayee.upiId;
+            currentPayee.initials = $('#edit-payee-initials').value.trim().toUpperCase() || currentPayee.initials;
+            currentPayee.color = $('#edit-payee-color').value;
+            
+            const bankingName = $('#edit-payee-bank').value.trim() || $('#payee-banking-name').textContent;
+
+            $('#payee-name').textContent = currentPayee.name;
+            $('#payee-banking-name').textContent = bankingName;
+            $('#payee-upi-display').textContent = currentPayee.upiId;
+            $('#payee-initials').textContent = currentPayee.initials;
+            $('#payee-avatar').style.background = currentPayee.color;
+
+            $('#modal-edit-payee').style.display = 'none';
         });
     }
 

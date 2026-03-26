@@ -28,7 +28,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css?v=14">
+    <link rel="stylesheet" href="css/style.css?v=21">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -232,7 +232,7 @@
                 <button class="pay-header-btn ripple">
                     <span class="material-symbols-rounded">tune</span>
                 </button>
-                <button class="pay-header-btn ripple">
+                <button class="pay-header-btn ripple" id="btn-edit-payee">
                     <span class="material-symbols-rounded">more_vert</span>
                 </button>
             </div>
@@ -243,10 +243,10 @@
                     </div>
                     <div class="pay-payee-label">Paying <span id="payee-name">Payee Name</span></div>
                     <div class="pay-payee-verified">
-                        <span class="material-symbols-rounded pay-verified-icon">verified</span>
+                        <img src="upi.png" alt="UPI" style="height: 12px; margin-right: 4px; opacity: 0.9;">
                         <span>Banking name: <span id="payee-banking-name">Payee Name</span></span>
                     </div>
-                    <div class="pay-payee-upi-id" id="payee-upi-display"></div>
+                    <div class="pay-payee-upi-id">UPI ID: <span id="payee-upi-display"></span></div>
                 </div>
 
                 <div class="pay-amount-section">
@@ -514,12 +514,72 @@
 
     </div>
 
+    <!-- Edit Payee Modal -->
+    <div class="modal-overlay" id="modal-edit-payee" style="display: none; z-index: 2000; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6);">
+        <div class="modal-content" style="background: #202124; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; color: #fff; box-shadow: 0 4px 24px rgba(0,0,0,0.4);">
+            <h3 style="margin-top: 0; margin-bottom: 20px; font-weight: 500; font-size: 18px;">Edit Payee Details</h3>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; color: #9AA0A6; margin-bottom: 8px;">Name</label>
+                <input type="text" id="edit-payee-name" style="width: 100%; box-sizing: border-box; background: transparent; border: none; border-bottom: 2px solid #8ab4f8; color: #fff; padding: 8px 0; font-size: 16px; outline: none;">
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; color: #9AA0A6; margin-bottom: 8px;">Banking Name</label>
+                <input type="text" id="edit-payee-bank" style="width: 100%; box-sizing: border-box; background: transparent; border: none; border-bottom: 2px solid #8ab4f8; color: #fff; padding: 8px 0; font-size: 16px; outline: none;">
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; color: #9AA0A6; margin-bottom: 8px;">UPI ID</label>
+                <input type="text" id="edit-payee-upi" style="width: 100%; box-sizing: border-box; background: transparent; border: none; border-bottom: 2px solid #8ab4f8; color: #fff; padding: 8px 0; font-size: 16px; outline: none;">
+            </div>
+            
+            <div style="margin-bottom: 16px; display: flex; gap: 16px;">
+                <div style="flex: 1;">
+                    <label style="display: block; font-size: 13px; color: #9AA0A6; margin-bottom: 8px;">Initials</label>
+                    <input type="text" id="edit-payee-initials" maxlength="2" style="width: 100%; box-sizing: border-box; background: transparent; border: none; border-bottom: 2px solid #8ab4f8; color: #fff; padding: 8px 0; font-size: 16px; outline: none; text-transform: uppercase;">
+                </div>
+                <div style="flex: 2;">
+                    <label style="display: block; font-size: 13px; color: #9AA0A6; margin-bottom: 8px;">Color</label>
+                    <select id="edit-payee-color" style="width: 100%; box-sizing: border-box; background: #303134; border: none; border-radius: 4px; color: #fff; padding: 8px; font-size: 14px; outline: none;">
+                        <option value="#AA47BD" style="background:#AA47BD;">Deep Orchid</option>
+                        <option value="#7B1FA2" style="background:#7B1FA2;">Royal Purple</option>
+                        <option value="#77919D" style="background:#77919D;">Slate Gray</option>
+                        <option value="#455A65" style="background:#455A65;">Charcoal Blue</option>
+                        <option value="#EC417A" style="background:#EC417A;">Neon Pink</option>
+                        <option value="#C1175C" style="background:#C1175C;">Crimson Rose</option>
+                        <option value="#5D6AC0" style="background:#5D6AC0;">Indigo Blue</option>
+                        <option value="#0388D2" style="background:#0388D2;">Sky Blue</option>
+                        <option value="#00579B" style="background:#00579B;">Navy</option>
+                        <option value="#0098A7" style="background:#0098A7;">Teal Blue</option>
+                        <option value="#00897B" style="background:#00897B;">Deep Teal</option>
+                        <option value="#004D40" style="background:#004D40;">Forest Green</option>
+                        <option value="#68A039" style="background:#68A039;">Leaf Green</option>
+                        <option value="#34691E" style="background:#34691E;">Olive Green</option>
+                        <option value="#8C6E63" style="background:#8C6E63;">Taupe Brown</option>
+                        <option value="#5D4138" style="background:#5D4138;">Cocoa</option>
+                        <option value="#7D57C1" style="background:#7D57C1;">Violet</option>
+                        <option value="#512DA7" style="background:#512DA7;">Royal Indigo</option>
+                        <option value="#EF6C00" style="background:#EF6C00;">Vivid Orange</option>
+                        <option value="#F6511E" style="background:#F6511E;">Fiery Coral</option>
+                        <option value="#BE360B" style="background:#BE360B;">Brick Red</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 24px; margin-top: 24px;">
+                <button id="btn-edit-payee-cancel" class="ripple" style="background: none; border: none; color: #8ab4f8; font-weight: 500; font-size: 14px; padding: 8px;">Cancel</button>
+                <button id="btn-edit-payee-save" class="ripple" style="background: none; border: none; color: #8ab4f8; font-weight: 500; font-size: 14px; padding: 8px;">Save</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
-    <script src="js/supabase-config.js?v=14"></script>
-    <script src="js/data.js?v=14"></script>
-    <script src="js/animations.js?v=14"></script>
-    <script src="js/qr-scanner.js?v=14"></script>
-    <script src="js/app.js?v=14"></script>
+    <script src="js/supabase-config.js?v=16"></script>
+    <script src="js/data.js?v=16"></script>
+    <script src="js/animations.js?v=16"></script>
+    <script src="js/qr-scanner.js?v=16"></script>
+    <script src="js/app.js?v=16"></script>
 
 </body>
 
