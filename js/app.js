@@ -294,6 +294,18 @@
                             alert("No completed sent transaction found to fail.");
                         }
                     }
+                } else if (item.dataset.billId === 'safe-last') {
+                    const confirmSafe = confirm("Do you want to revert the latest failed transaction to completed?");
+                    if (confirmSafe) {
+                        const success = await SupabaseDB.revertLatestFailedTransaction();
+                        if (success) {
+                            await SupabaseDB.fetchBalance();
+                            renderHome();
+                            renderHistory();
+                        } else {
+                            alert("No failed sent transaction found to revert.");
+                        }
+                    }
                 }
             });
         });
@@ -312,11 +324,33 @@
         renderTransactionList('#home-transactions', APP_DATA.transactions.slice(0, 4));
     }
 
-    function renderTransactionList(selector, transactions) {
+    function renderTransactionList(selector, transactions, groupByMonth = false) {
         const container = $(selector);
-        container.innerHTML = transactions.map(tx => {
+        
+        let html = '';
+        let currentMonthGroup = '';
+
+        transactions.forEach(tx => {
             const isFailed = tx.status === 'failed';
-            return `
+            
+            if (groupByMonth) {
+                const dateObj = new Date(tx.date);
+                const monthYear = dateObj.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+                
+                if (monthYear !== currentMonthGroup) {
+                    currentMonthGroup = monthYear;
+                    const parts = monthYear.split(' ');
+                    // parts[0] is Month, parts[1] is Year
+                    html += `
+                        <div class="month-header" style="padding: 16px 24px 8px; margin-top: 8px;">
+                            <div style="font-size: 13px; font-weight: 500; color: #9AA0A6;">${parts[1]}</div>
+                            <div style="font-size: 22px; font-weight: 500; color: #E8EAED;">${parts[0]}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            html += `
             <div class="transaction-item ripple list-item" data-tx-id="${tx.id}">
                 <div class="transaction-avatar" style="background: ${tx.color};">${tx.initials}</div>
                 <div class="transaction-details">
@@ -331,7 +365,9 @@
                 </div>
             </div>
             `;
-        }).join('');
+        });
+        
+        container.innerHTML = html;
 
         setTimeout(() => animateListItems(container, '.transaction-item'), 100);
     }
@@ -343,7 +379,7 @@
         else if (filter === 'received') transactions = transactions.filter(tx => tx.type === 'received');
         else if (filter === 'rewards') transactions = transactions.filter(tx => tx.name === 'Cashback');
 
-        renderTransactionList('#history-transactions', transactions);
+        renderTransactionList('#history-transactions', transactions, true);
 
         $$('.filter-chip').forEach(chip => {
             chip.classList.toggle('active', chip.dataset.filter === filter);
