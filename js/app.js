@@ -36,6 +36,7 @@
             setupPinPad();
             setupSearch();
             setupBalanceCard();
+            renderUserProfile();
         } catch (err) {
             console.error('Render error:', err);
         }
@@ -857,6 +858,34 @@
 
             initRipples();
         }, 600);
+    }
+
+    // ---------- User Profile ----------
+    function renderUserProfile() {
+        if (!APP_DATA.user) return;
+        
+        const user = APP_DATA.user;
+        
+        // Home Screen
+        const homeAvatar = $('#btn-profile-home');
+        if (homeAvatar) homeAvatar.textContent = user.initials;
+        
+        // Profile Screen
+        const profileAvatar = $('#profile-avatar');
+        const profileName = $('#profile-name');
+        const profilePhone = $('#profile-phone');
+        const profileUpi = $('#profile-upi');
+        
+        if (profileAvatar) profileAvatar.textContent = user.initials;
+        if (profileName) profileName.textContent = user.name;
+        if (profilePhone) profilePhone.textContent = user.phone;
+        if (profileUpi) profileUpi.textContent = user.upiId;
+
+        // Bank Card in Profile
+        const bankCardName = $('#bank-card-name');
+        const bankCardAccount = $('#bank-card-account');
+        if (bankCardName) bankCardName.textContent = user.bank.name;
+        if (bankCardAccount) bankCardAccount.textContent = user.bank.account;
     }
 
     // ---------- Boot ----------
