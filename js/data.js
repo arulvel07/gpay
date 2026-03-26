@@ -4,12 +4,12 @@
 
 const APP_DATA = {
     user: {
-        name: "Mohit Kumr",
+        name: "Neymar JR",
         phone: "+91 98765 43210",
-        email: "mohit.kumar@gmail.com",
-        upiId: "mohit@okaxis",
+        email: "neymarjr@gmail.com",
+        upiId: "neymar@okaxis",
         avatar: null,
-        initials: "MK",
+        initials: "N",
         bank: {
             name: "Axis Bank",
             account: "XXXX XXXX 4521",

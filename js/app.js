@@ -54,6 +54,85 @@
 
         // Apply ripple effects
         initRipples();
+
+        // History API setup
+        if (!window.location.hash) {
+            history.replaceState(null, '', '#home');
+        }
+        window.addEventListener('popstate', handlePopState);
+    }
+
+    // ---------- History State ----------
+    let isHistoryNavigating = false;
+
+    function pushHistory(hash) {
+        if (!isHistoryNavigating) {
+            history.pushState(null, '', '#' + hash);
+        }
+    }
+
+    function popHistory() {
+        if (!isHistoryNavigating) {
+            isHistoryNavigating = true;
+            history.back();
+            setTimeout(() => { isHistoryNavigating = false; }, 100);
+        }
+    }
+
+    function handlePopState(e) {
+        if (isHistoryNavigating) return;
+
+        isHistoryNavigating = true;
+        const hash = window.location.hash.replace('#', '');
+
+        const result = $('#screen-result');
+        const pin = $('#screen-pin');
+        const payment = $('#screen-payment');
+        const scanner = $('#screen-scanner');
+
+        if (result && !result.classList.contains('hidden')) {
+            result.style.opacity = '0';
+            setTimeout(() => {
+                result.style.display = 'none';
+                result.classList.add('hidden');
+                result.style.opacity = '';
+                showScreen('home');
+            }, 300);
+        } else if (pin && !pin.classList.contains('hidden')) {
+            const el = $('#screen-pin');
+            slideOut(el, 'right');
+            setTimeout(() => el.classList.add('hidden'), 350);
+        } else if (payment && !payment.classList.contains('hidden')) {
+            const el = $('#screen-payment');
+            slideOut(el, 'right');
+            setTimeout(() => el.classList.add('hidden'), 350);
+        } else if (scanner && !scanner.classList.contains('hidden')) {
+            if (typeof stopScanning === 'function') stopScanning();
+            const el = $('#screen-scanner');
+            slideOut(el, 'right');
+            setTimeout(() => el.classList.add('hidden'), 350);
+        } else {
+            const target = ['home', 'history', 'offers', 'profile'].includes(hash) ? hash : 'home';
+            
+            const tabScreens = ['home', 'history', 'offers', 'profile'];
+            tabScreens.forEach(s => {
+                const el = $(`#screen-${s}`);
+                if (s === target) {
+                    el.classList.remove('hidden');
+                    el.classList.add('active');
+                } else {
+                    el.classList.add('hidden');
+                    el.classList.remove('active');
+                }
+            });
+            currentScreen = target;
+            
+            $$('.nav-item').forEach(n => n.classList.remove('active'));
+            const activeNav = $(`.nav-item[data-screen="${target}"]`);
+            if (activeNav) activeNav.classList.add('active');
+        }
+
+        setTimeout(() => { isHistoryNavigating = false; }, 100);
     }
 
     // ---------- Navigation ----------
@@ -97,6 +176,8 @@
     }
 
     function showScreen(name) {
+        if (name !== currentScreen) pushHistory(name);
+
         const tabScreens = ['home', 'history', 'offers', 'profile'];
         tabScreens.forEach(s => {
             const el = $(`#screen-${s}`);
@@ -112,12 +193,14 @@
     }
 
     function showOverlay(name) {
+        pushHistory('overlay-' + name);
         const el = $(`#screen-${name}`);
         el.classList.remove('hidden');
         slideIn(el, 'right');
     }
 
     function hideOverlay(name) {
+        popHistory();
         const el = $(`#screen-${name}`);
         slideOut(el, 'right');
         setTimeout(() => el.classList.add('hidden'), 350);
@@ -282,6 +365,7 @@
 
     // ---------- QR Scanner ----------
     function openScanner() {
+        pushHistory('scanner');
         const screen = $('#screen-scanner');
         screen.classList.remove('hidden');
         slideIn(screen, 'right');
@@ -292,6 +376,7 @@
     }
 
     function closeScanner() {
+        popHistory();
         stopScanning();
         const screen = $('#screen-scanner');
         slideOut(screen, 'right');
