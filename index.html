@@ -28,7 +28,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css?v=21">
+    <link rel="stylesheet" href="css/style.css?v=22">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -541,29 +541,19 @@
                 </div>
                 <div style="flex: 2;">
                     <label style="display: block; font-size: 13px; color: #9AA0A6; margin-bottom: 8px;">Color</label>
-                    <select id="edit-payee-color" style="width: 100%; box-sizing: border-box; background: #303134; border: none; border-radius: 4px; color: #fff; padding: 8px; font-size: 14px; outline: none;">
-                        <option value="#AA47BD" style="background:#AA47BD;">Deep Orchid</option>
-                        <option value="#7B1FA2" style="background:#7B1FA2;">Royal Purple</option>
-                        <option value="#77919D" style="background:#77919D;">Slate Gray</option>
-                        <option value="#455A65" style="background:#455A65;">Charcoal Blue</option>
-                        <option value="#EC417A" style="background:#EC417A;">Neon Pink</option>
-                        <option value="#C1175C" style="background:#C1175C;">Crimson Rose</option>
-                        <option value="#5D6AC0" style="background:#5D6AC0;">Indigo Blue</option>
-                        <option value="#0388D2" style="background:#0388D2;">Sky Blue</option>
-                        <option value="#00579B" style="background:#00579B;">Navy</option>
-                        <option value="#0098A7" style="background:#0098A7;">Teal Blue</option>
-                        <option value="#00897B" style="background:#00897B;">Deep Teal</option>
-                        <option value="#004D40" style="background:#004D40;">Forest Green</option>
-                        <option value="#68A039" style="background:#68A039;">Leaf Green</option>
-                        <option value="#34691E" style="background:#34691E;">Olive Green</option>
-                        <option value="#8C6E63" style="background:#8C6E63;">Taupe Brown</option>
-                        <option value="#5D4138" style="background:#5D4138;">Cocoa</option>
-                        <option value="#7D57C1" style="background:#7D57C1;">Violet</option>
-                        <option value="#512DA7" style="background:#512DA7;">Royal Indigo</option>
-                        <option value="#EF6C00" style="background:#EF6C00;">Vivid Orange</option>
-                        <option value="#F6511E" style="background:#F6511E;">Fiery Coral</option>
-                        <option value="#BE360B" style="background:#BE360B;">Brick Red</option>
-                    </select>
+                    <div style="position: relative;" id="custom-color-select-container">
+                        <div id="color-select-btn" class="ripple" style="width: 100%; box-sizing: border-box; background: #303134; border-radius: 4px; padding: 8px; font-size: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div id="color-select-preview" style="width: 16px; height: 16px; border-radius: 50%; background: #AA47BD;"></div>
+                                <span id="color-select-label">Deep Orchid</span>
+                            </div>
+                            <span class="material-symbols-rounded" style="font-size: 18px; color: #9AA0A6;">expand_more</span>
+                        </div>
+                        <div id="color-select-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #303134; border-radius: 4px; max-height: 200px; overflow-y: auto; z-index: 2001; margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                            <!-- Options injected via JS -->
+                        </div>
+                        <input type="hidden" id="edit-payee-color" value="#AA47BD">
+                    </div>
                 </div>
             </div>
             

@@ -509,6 +509,60 @@
             hideOverlay('payment');
         });
 
+        // Color Dropdown Data
+        const colorOptions = [
+            { id: '#AA47BD', name: 'Deep Orchid' }, { id: '#7B1FA2', name: 'Royal Purple' },
+            { id: '#77919D', name: 'Slate Gray' }, { id: '#455A65', name: 'Charcoal Blue' },
+            { id: '#EC417A', name: 'Neon Pink' }, { id: '#C1175C', name: 'Crimson Rose' },
+            { id: '#5D6AC0', name: 'Indigo Blue' }, { id: '#0388D2', name: 'Sky Blue' },
+            { id: '#00579B', name: 'Navy' }, { id: '#0098A7', name: 'Teal Blue' },
+            { id: '#00897B', name: 'Deep Teal' }, { id: '#004D40', name: 'Forest Green' },
+            { id: '#68A039', name: 'Leaf Green' }, { id: '#34691E', name: 'Olive Green' },
+            { id: '#8C6E63', name: 'Taupe Brown' }, { id: '#5D4138', name: 'Cocoa' },
+            { id: '#7D57C1', name: 'Violet' }, { id: '#512DA7', name: 'Royal Indigo' },
+            { id: '#EF6C00', name: 'Vivid Orange' }, { id: '#F6511E', name: 'Fiery Coral' },
+            { id: '#BE360B', name: 'Brick Red' }
+        ];
+
+        const colorDropdown = $('#color-select-dropdown');
+        const colorBtn = $('#color-select-btn');
+        const colorPreview = $('#color-select-preview');
+        const colorLabel = $('#color-select-label');
+        const colorInput = $('#edit-payee-color');
+
+        // Render custom options
+        colorDropdown.innerHTML = colorOptions.map(c => `
+            <div class="color-option ripple" data-value="${c.id}" data-name="${c.name}" style="padding: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <div style="width: 16px; height: 16px; border-radius: 50%; background: ${c.id}; box-shadow: 0 0 2px rgba(255,255,255,0.2);"></div>
+                <span style="color: #fff; font-size: 14px;">${c.name}</span>
+            </div>
+        `).join('');
+
+        // Handle dropdown toggle
+        colorBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isHidden = colorDropdown.style.display === 'none';
+            colorDropdown.style.display = isHidden ? 'block' : 'none';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+             colorDropdown.style.display = 'none';
+        });
+
+        // Handle option click
+        colorDropdown.querySelectorAll('.color-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const val = opt.getAttribute('data-value');
+                const name = opt.getAttribute('data-name');
+                colorInput.value = val;
+                colorPreview.style.background = val;
+                colorLabel.textContent = name;
+                colorDropdown.style.display = 'none';
+            });
+        });
+
         // Edit Payee feature
         $('#btn-edit-payee').addEventListener('click', () => {
             if (!currentPayee) return;
@@ -525,15 +579,13 @@
             $('#edit-payee-upi').placeholder = currentPayee.upiId || 'UPI ID';
             $('#edit-payee-initials').placeholder = currentPayee.initials || 'IN';
 
-            const colorSelect = $('#edit-payee-color');
-            let found = false;
-            Array.from(colorSelect.options).forEach(opt => {
-                if (opt.value.toUpperCase() === (currentPayee.color || '').toUpperCase()) {
-                    opt.selected = true;
-                    found = true;
-                }
-            });
-            if (!found) colorSelect.selectedIndex = 0;
+            // Sync custom dropdown logic
+            const targetColor = (currentPayee.color || '#AA47BD').toUpperCase();
+            const matchedColor = colorOptions.find(c => c.id.toUpperCase() === targetColor) || colorOptions[0];
+            colorInput.value = matchedColor.id;
+            colorPreview.style.background = matchedColor.id;
+            colorLabel.textContent = matchedColor.name;
+            colorDropdown.style.display = 'none'; // reset just in case
 
             $('#modal-edit-payee').style.display = 'flex';
         });
