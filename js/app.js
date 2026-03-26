@@ -548,7 +548,7 @@
 
         // Close dropdown when clicking outside
         document.addEventListener('click', () => {
-             colorDropdown.style.display = 'none';
+            colorDropdown.style.display = 'none';
         });
 
         // Handle option click
@@ -764,8 +764,8 @@
                         <div class="result-payee-upi">${payee.upiId}</div>
                         <div class="result-date">${formattedDate}</div>
                     </div>
-                    <div class="result-upi-badge">
-                        <img src="upi.png" alt="Powered by UPI" class="result-upi-logo">
+                    <div class="result-upi-badge" style="margin-bottom: 24px;">
+                        <img src="upi.jpg" alt="UPI" class="result-upi-logo" style="height: 32px; opacity: 1;">
                     </div>
                     <div class="result-bottom-bar">
                         <button class="result-share-btn ripple" id="btn-result-share">
@@ -863,19 +863,19 @@
     // ---------- User Profile ----------
     function renderUserProfile() {
         if (!APP_DATA.user) return;
-        
+
         const user = APP_DATA.user;
-        
+
         // Home Screen
         const homeAvatar = $('#btn-profile-home');
         if (homeAvatar) homeAvatar.textContent = user.initials;
-        
+
         // Profile Screen
         const profileAvatar = $('#profile-avatar');
         const profileName = $('#profile-name');
         const profilePhone = $('#profile-phone');
         const profileUpi = $('#profile-upi');
-        
+
         if (profileAvatar) profileAvatar.textContent = user.initials;
         if (profileName) profileName.textContent = user.name;
         if (profilePhone) profilePhone.textContent = user.phone;
