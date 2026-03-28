@@ -16,22 +16,22 @@
     const $ = (sel) => document.querySelector(sel);
     const $$ = (sel) => document.querySelectorAll(sel);
 
-    function showInsufficientBalanceError() {
-        hideInsufficientBalanceError();
+    function showPaymentError(message) {
+        hidePaymentError();
         const errorEl = document.createElement('div');
         errorEl.className = 'error-message-pill';
-        errorEl.id = 'insufficient-balance-error';
+        errorEl.id = 'payment-error';
         errorEl.innerHTML = `
             <span class="material-symbols-rounded">error</span>
-            <span>Insufficient balance. Check your account balance.</span>
+            <span>${message}</span>
         `;
         const payeeSection = $('.pay-payee-section');
         if (payeeSection) payeeSection.after(errorEl);
-        setTimeout(() => hideInsufficientBalanceError(), 4000);
+        setTimeout(() => hidePaymentError(), 4000);
     }
 
-    function hideInsufficientBalanceError() {
-        const existing = $('#insufficient-balance-error');
+    function hidePaymentError() {
+        const existing = $('#payment-error');
         if (existing) existing.remove();
     }
 
@@ -505,7 +505,7 @@
             e.target.value = val;
             payAmount = val;
 
-            hideInsufficientBalanceError();
+            hidePaymentError();
 
             // Flex input hug
             e.target.style.width = (Math.max(1, val.length) + 0.2) + 'ch';
@@ -523,11 +523,17 @@
         });
 
         $('#btn-pay').addEventListener('click', async () => {
-            if (!payAmount || parseFloat(payAmount) <= 0) return;
+            const amount = parseFloat(payAmount);
+            if (!payAmount || amount <= 0) return;
+
+            if (amount > 1000) {
+                showPaymentError('Maximum transaction limit is ₹1,000.');
+                return;
+            }
 
             const currentBalance = await SupabaseDB.fetchBalance();
-            if (parseFloat(payAmount) > currentBalance) {
-                showInsufficientBalanceError();
+            if (amount > currentBalance) {
+                showPaymentError('Insufficient balance. Check your account balance.');
                 return;
             }
 
@@ -748,7 +754,7 @@
         const noteVal = $('#note-input').value || '';
 
         const currentBalance = await SupabaseDB.fetchBalance();
-        const isSuccess = (enteredPin === '111927') && (amount <= currentBalance);
+        const isSuccess = (enteredPin === '111927') && (amount <= currentBalance) && (amount <= 1000);
 
         const resultScreen = $('#screen-result');
         const resultContent = $('#result-content');
