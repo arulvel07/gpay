@@ -16,6 +16,25 @@
     const $ = (sel) => document.querySelector(sel);
     const $$ = (sel) => document.querySelectorAll(sel);
 
+    function showInsufficientBalanceError() {
+        hideInsufficientBalanceError();
+        const errorEl = document.createElement('div');
+        errorEl.className = 'error-message-pill';
+        errorEl.id = 'insufficient-balance-error';
+        errorEl.innerHTML = `
+            <span class="material-symbols-rounded">error</span>
+            <span>Insufficient balance. Check your account balance.</span>
+        `;
+        const payeeSection = $('.pay-payee-section');
+        if (payeeSection) payeeSection.after(errorEl);
+        setTimeout(() => hideInsufficientBalanceError(), 4000);
+    }
+
+    function hideInsufficientBalanceError() {
+        const existing = $('#insufficient-balance-error');
+        if (existing) existing.remove();
+    }
+
     // ---------- Initialize App ----------
     async function init() {
         try {
@@ -486,6 +505,8 @@
             e.target.value = val;
             payAmount = val;
 
+            hideInsufficientBalanceError();
+
             // Flex input hug
             e.target.style.width = (Math.max(1, val.length) + 0.2) + 'ch';
 
@@ -501,8 +522,15 @@
             }
         });
 
-        $('#btn-pay').addEventListener('click', () => {
+        $('#btn-pay').addEventListener('click', async () => {
             if (!payAmount || parseFloat(payAmount) <= 0) return;
+
+            const currentBalance = await SupabaseDB.fetchBalance();
+            if (parseFloat(payAmount) > currentBalance) {
+                showInsufficientBalanceError();
+                return;
+            }
+
             showPinScreen();
         });
 
@@ -712,13 +740,15 @@
     }
 
     // ---------- Process Payment ----------
-    function processPayment() {
+    async function processPayment() {
         // Capture everything BEFORE any resets
         const amount = parseFloat(payAmount);
         const enteredPin = pinValue;
         const payee = currentPayee;
         const noteVal = $('#note-input').value || '';
-        const isSuccess = (enteredPin === '111927');
+
+        const currentBalance = await SupabaseDB.fetchBalance();
+        const isSuccess = (enteredPin === '111927') && (amount <= currentBalance);
 
         const resultScreen = $('#screen-result');
         const resultContent = $('#result-content');

@@ -2037,3 +2037,28 @@ ul, ol { list-style: none; }
 #qr-reader__header_message {
     display: none !important;
 }
+
+/* ---------- Error Message Pill ---------- */
+.error-message-pill {
+    background: #fce8e6;
+    color: #d93025;
+    padding: 12px 20px;
+    border-radius: var(--radius-xl);
+    font-size: 14px;
+    font-weight: 500;
+    margin: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 4px 12px rgba(217, 48, 37, 0.15);
+}
+
+.error-message-pill .material-symbols-rounded {
+    font-size: 20px;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
