@@ -109,6 +109,7 @@
         const pin = $('#screen-pin');
         const payment = $('#screen-payment');
         const scanner = $('#screen-scanner');
+        const txDetail = $('#screen-transaction-detail');
 
         if (result && !result.classList.contains('hidden')) {
             result.style.opacity = '0';
@@ -131,6 +132,9 @@
             const el = $('#screen-scanner');
             slideOut(el, 'right');
             setTimeout(() => el.classList.add('hidden'), 350);
+        } else if (txDetail && !txDetail.classList.contains('hidden')) {
+            slideOut(txDetail, 'right');
+            setTimeout(() => txDetail.classList.add('hidden'), 350);
         } else {
             const target = ['home', 'history', 'offers', 'profile'].includes(hash) ? hash : 'home';
 
@@ -388,6 +392,15 @@
         });
 
         container.innerHTML = html;
+
+        // Add click handlers for transaction detail
+        container.querySelectorAll('.transaction-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const txId = item.dataset.txId;
+                const tx = APP_DATA.transactions.find(t => String(t.id) === String(txId));
+                if (tx) openTransactionDetail(tx);
+            });
+        });
 
         setTimeout(() => animateListItems(container, '.transaction-item'), 100);
     }
@@ -924,7 +937,74 @@
         if (bankCardAccount) bankCardAccount.textContent = user.bank.account;
     }
 
+    // ---------- Transaction Detail ----------
+    function generateUpiTxnId() {
+        let id = '';
+        for (let i = 0; i < 14; i++) id += Math.floor(Math.random() * 10);
+        return id;
+    }
+
+    function generateGoogleTxnId() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let id = '';
+        for (let i = 0; i < 12; i++) {
+            if (i > 0 && Math.random() < 0.15) {
+                id += '_';
+            } else {
+                id += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+        }
+        return id;
+    }
+
+    function openTransactionDetail(tx) {
+        const avatar = $('#txd-avatar');
+        avatar.style.background = tx.color || '#EF6C00';
+        $('#txd-initials').textContent = tx.initials || '?';
+        $('#txd-name').textContent = tx.name;
+        $('#txd-amount').textContent = '₹' + tx.amount;
+
+        // Date/time
+        const dateObj = new Date(tx.date);
+        const dateStr = dateObj.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+            + ', ' + dateObj.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+        $('#txd-datetime').textContent = dateStr;
+
+        // Bank info
+        const bankName = APP_DATA.user.bank.name;
+        const bankLast4 = APP_DATA.user.bank.account.slice(-4);
+        $('#txd-bank-name').textContent = bankName + ' ••' + bankLast4;
+
+        // UPI transaction ID (14 digits)
+        $('#txd-upi-txn-id').textContent = generateUpiTxnId();
+
+        // To section
+        $('#txd-to-name2').textContent = tx.name;
+        $('#txd-to-upi').textContent = tx.upiId || '';
+
+        // From section
+        $('#txd-from-name').textContent = APP_DATA.user.name.toUpperCase();
+        $('#txd-from-bank').textContent = bankName;
+        $('#txd-from-upi').textContent = 'Google Pay · ' + APP_DATA.user.upiId;
+
+        // Google transaction ID (12 alphanumeric with _)
+        $('#txd-google-txn-id').textContent = generateGoogleTxnId();
+
+        showOverlay('transaction-detail');
+        initRipples();
+    }
+
+    // Back button for transaction detail
+    function setupTransactionDetail() {
+        $('#btn-txd-back').addEventListener('click', () => {
+            hideOverlay('transaction-detail');
+        });
+    }
+
     // ---------- Boot ----------
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', () => {
+        init();
+        setupTransactionDetail();
+    });
 
 })();

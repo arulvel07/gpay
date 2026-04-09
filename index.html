@@ -28,7 +28,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css?v=22">
+    <link rel="stylesheet" href="css/style.css?v=27">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -356,6 +356,73 @@
             </div>
         </div>
 
+        <!-- ==================== TRANSACTION DETAIL SCREEN ==================== -->
+        <div class="screen screen-overlay hidden" id="screen-transaction-detail">
+            <div class="txd-header">
+                <button class="txd-header-btn ripple" id="btn-txd-back">
+                    <span class="material-symbols-rounded">arrow_back</span>
+                </button>
+                <div style="flex: 1;"></div>
+                <button class="txd-header-btn ripple">
+                    <span class="material-symbols-rounded">share</span>
+                </button>
+                <button class="txd-header-btn ripple">
+                    <span class="material-symbols-rounded">more_vert</span>
+                </button>
+            </div>
+            <div class="txd-body">
+                <div class="txd-profile-section">
+                    <div class="txd-avatar" id="txd-avatar">
+                        <span id="txd-initials">?</span>
+                    </div>
+                    <div class="txd-to-label">To <span id="txd-name">Name</span></div>
+                </div>
+
+                <div class="txd-amount" id="txd-amount">₹0</div>
+
+                <div class="txd-status">
+                    <img src="tick.png" alt="tick" class="txd-tick-icon">
+                    <span class="txd-status-text">Completed</span>
+                </div>
+
+                <div class="txd-datetime" id="txd-datetime">9 Apr 2026, 7:07 pm</div>
+
+                <div class="txd-bank-card">
+                    <div class="txd-bank-icon">
+                        <span class="material-symbols-rounded" style="color: #26a69a; font-size: 20px;">account_balance</span>
+                    </div>
+                    <div class="txd-bank-name" id="txd-bank-name">State Bank of India ••42</div>
+                    <span class="material-symbols-rounded" style="color: #9aa0a6; font-size: 18px;">expand_more</span>
+                </div>
+
+                <div class="txd-details-card">
+                    <div class="txd-detail-group">
+                        <div class="txd-detail-label">UPI transaction ID</div>
+                        <div class="txd-detail-value" id="txd-upi-txn-id">60796209727844</div>
+                    </div>
+
+                    <div class="txd-detail-group">
+                        <div class="txd-detail-label">To <span id="txd-to-name2">Name</span></div>
+                        <div class="txd-detail-value txd-detail-upi" id="txd-to-upi">user@ybl</div>
+                    </div>
+
+                    <div class="txd-detail-group">
+                        <div class="txd-detail-label">From <span id="txd-from-name">ARULVEL V</span> (<span id="txd-from-bank">State Bank of India</span>)</div>
+                        <div class="txd-detail-value txd-detail-upi" id="txd-from-upi">googlepay@oksbi</div>
+                    </div>
+
+                    <div class="txd-detail-group">
+                        <div class="txd-detail-label">Google transaction ID</div>
+                        <div class="txd-detail-value" id="txd-google-txn-id">CICqYSznq_82a</div>
+                    </div>
+                </div>
+
+                <div class="txd-upi-badge">
+                    <img src="upi.jpg" alt="UPI" class="txd-upi-logo">
+                </div>
+            </div>
+        </div>
+
         <!-- ==================== HISTORY SCREEN ==================== -->
         <div class="screen hidden" id="screen-history">
             <div class="header">
@@ -577,11 +644,11 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/supabase-config.js?v=26"></script>
-    <script src="js/data.js?v=26"></script>
-    <script src="js/animations.js?v=26"></script>
-    <script src="js/qr-scanner.js?v=26"></script>
-    <script src="js/app.js?v=26"></script>
+    <script src="js/supabase-config.js?v=27"></script>
+    <script src="js/data.js?v=27"></script>
+    <script src="js/animations.js?v=27"></script>
+    <script src="js/qr-scanner.js?v=27"></script>
+    <script src="js/app.js?v=27"></script>
 
 </body>
 
