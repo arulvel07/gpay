@@ -354,6 +354,23 @@
         let html = '';
         let currentMonthGroup = '';
 
+        // Pre-compute monthly totals for groupByMonth
+        const monthlyTotals = {};
+        if (groupByMonth) {
+            transactions.forEach(tx => {
+                const dateObj = new Date(tx.date);
+                const monthYear = dateObj.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+                if (!monthlyTotals[monthYear]) monthlyTotals[monthYear] = 0;
+                if (tx.status !== 'failed') {
+                    if (tx.type === 'sent') {
+                        monthlyTotals[monthYear] -= tx.amount;
+                    } else {
+                        monthlyTotals[monthYear] += tx.amount;
+                    }
+                }
+            });
+        }
+
         transactions.forEach(tx => {
             const isFailed = tx.status === 'failed';
 
@@ -364,11 +381,19 @@
                 if (monthYear !== currentMonthGroup) {
                     currentMonthGroup = monthYear;
                     const parts = monthYear.split(' ');
-                    // parts[0] is Month, parts[1] is Year
+                    const total = monthlyTotals[monthYear] || 0;
+                    const totalColor = total >= 0 ? '#81c995' : '#f28b82';
+                    const totalSign = total >= 0 ? '+' : '-';
+                    const totalDisplay = totalSign + ' ₹' + Math.abs(total).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
                     html += `
-                        <div class="month-header" style="background: #f1f3f4; padding: 16px 24px 8px; margin-top: 8px;">
-                            <div style="font-size: 13px; font-weight: 700; color: #5f6368;">${parts[1]}</div>
-                            <div style="font-size: 22px; font-weight: 700; color: #38393aff;">${parts[0]}</div>
+                        <div class="month-header" style="background: #2d2d2d; padding: 16px 24px 8px; margin-top: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                <div>
+                                    <div style="font-size: 13px; font-weight: 700; color: #9aa0a6;">${parts[1]}</div>
+                                    <div style="font-size: 22px; font-weight: 700; color: #e8eaed;">${parts[0]}</div>
+                                </div>
+                                <div style="font-size: 15px; font-weight: 600; color: ${totalColor};">${totalDisplay}</div>
+                            </div>
                         </div>
                     `;
                 }
@@ -378,10 +403,10 @@
             <div class="transaction-item ripple list-item" data-tx-id="${tx.id}">
                 <div class="transaction-avatar" style="background: ${tx.color};">${tx.initials}</div>
                 <div class="transaction-details">
-                    <div class="transaction-name">${tx.name}</div>
+                    <div class="transaction-name" ${isFailed ? 'style="color: #f28b82;"' : ''}>${tx.name}</div>
                     <div class="transaction-date">
                         ${formatDate(tx.date)}
-                        ${isFailed ? '<span style="color: #ea4335; font-weight: 500; margin-left: 4px;">• Failed</span>' : ''}
+                        ${isFailed ? '<span style="color: #f28b82; font-weight: 500; margin-left: 4px;">• Failed</span>' : ''}
                     </div>
                 </div>
                 <div class="transaction-amount ${tx.type === 'sent' ? 'sent' : 'received'}" ${isFailed ? 'style="color: var(--text-secondary); text-decoration: line-through;"' : ''}>
@@ -958,11 +983,41 @@
     }
 
     function openTransactionDetail(tx) {
+        const isFailed = tx.status === 'failed';
+
         const avatar = $('#txd-avatar');
         avatar.style.background = tx.color || '#EF6C00';
         $('#txd-initials').textContent = tx.initials || '?';
         $('#txd-name').textContent = tx.name;
         $('#txd-amount').textContent = '₹' + tx.amount;
+
+        // Status: tick+Completed or cross+Failed
+        const statusIcon = $('#txd-status-icon');
+        const statusText = $('#txd-status-text');
+        if (isFailed) {
+            // Replace img with a cross icon span
+            statusIcon.style.display = 'none';
+            // Remove any existing cross icon
+            const existingCross = document.getElementById('txd-cross-icon');
+            if (existingCross) existingCross.remove();
+            const crossEl = document.createElement('span');
+            crossEl.className = 'material-symbols-rounded';
+            crossEl.id = 'txd-cross-icon';
+            crossEl.style.cssText = 'font-size: 18px; color: #f28b82;';
+            crossEl.textContent = 'close';
+            statusIcon.parentElement.insertBefore(crossEl, statusIcon);
+            statusText.textContent = 'Failed';
+            statusText.style.color = '#f28b82';
+            // Also make the name red
+            $('#txd-name').style.color = '#f28b82';
+        } else {
+            statusIcon.style.display = '';
+            const existingCross = document.getElementById('txd-cross-icon');
+            if (existingCross) existingCross.remove();
+            statusText.textContent = 'Completed';
+            statusText.style.color = '#34A853';
+            $('#txd-name').style.color = '';
+        }
 
         // Date/time
         const dateObj = new Date(tx.date);

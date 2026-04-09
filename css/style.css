@@ -8,30 +8,30 @@
 /* ---------- CSS Custom Properties ---------- */
 :root {
     /* Google Pay Colors */
-    --gpay-blue: #1a73e8;
-    --gpay-blue-dark: #1557b0;
-    --gpay-blue-light: #e8f0fe;
-    --gpay-green: #34A853;
-    --gpay-red: #EA4335;
-    --gpay-yellow: #FBBC04;
-    --gpay-teal: #1a73e8;
+    --gpay-blue: #8ab4f8;
+    --gpay-blue-dark: #669df6;
+    --gpay-blue-light: rgba(138, 180, 248, 0.12);
+    --gpay-green: #81c995;
+    --gpay-red: #f28b82;
+    --gpay-yellow: #fdd663;
+    --gpay-teal: #8ab4f8;
 
-    /* Neutrals */
-    --bg-primary: #f8f9fa;
-    --bg-secondary: #ffffff;
-    --bg-card: #ffffff;
-    --bg-input: #f1f3f4;
-    --text-primary: #202124;
-    --text-secondary: #5f6368;
+    /* Neutrals — Dark Theme */
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-card: #2d2d2d;
+    --bg-input: #3c4043;
+    --text-primary: #e8eaed;
+    --text-secondary: #bdc1c6;
     --text-tertiary: #9aa0a6;
-    --border-color: #e8eaed;
-    --divider: #dadce0;
+    --border-color: #3c4043;
+    --divider: #3c4043;
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.08);
-    --shadow-md: 0 2px 8px rgba(0,0,0,0.1);
-    --shadow-lg: 0 4px 16px rgba(0,0,0,0.12);
-    --shadow-xl: 0 8px 32px rgba(0,0,0,0.15);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.4);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.5);
+    --shadow-xl: 0 8px 32px rgba(0,0,0,0.6);
 
     /* Spacing */
     --nav-height: 64px;
@@ -68,7 +68,7 @@ html {
 
 body {
     font-family: var(--font-primary);
-    background: #e3e6e8;
+    background: #121212;
     color: var(--text-primary);
     line-height: 1.5;
     overflow: hidden;
@@ -102,14 +102,14 @@ ul, ol { list-style: none; }
     .app-container {
         border-radius: 32px;
         height: 90vh;
-        border: 8px solid #1a1a2e;
+        border: 8px solid #0d0d0d;
     }
 }
 
 /* On mobile, full screen */
 @media (max-width: 480px) {
     body {
-        background: var(--bg-primary);
+        background: #121212;
     }
     .app-container {
         max-width: 100%;
@@ -253,12 +253,12 @@ ul, ol { list-style: none; }
 .gpay-logo-text {
     font-size: 20px;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: #e8eaed;
     letter-spacing: -0.3px;
 }
 
 .gpay-logo-text span {
-    color: var(--gpay-blue);
+    color: #8ab4f8;
     font-weight: 700;
 }
 
@@ -278,7 +278,7 @@ ul, ol { list-style: none; }
     font-size: 14px;
     font-weight: 500;
     color: white;
-    background: var(--gpay-blue);
+    background: #1a73e8;
     cursor: pointer;
     transition: transform var(--transition-fast);
 }
@@ -299,7 +299,7 @@ ul, ol { list-style: none; }
 }
 
 .search-bar:hover {
-    background: #e8eaed;
+    background: #4a4a4a;
 }
 
 .search-bar .material-symbols-rounded {
@@ -512,8 +512,8 @@ ul, ol { list-style: none; }
     white-space: nowrap;
 }
 
-.transaction-amount.sent { color: #EA4335; /* Google Red */ }
-.transaction-amount.received { color: #34A853; /* Google Green */ }
+.transaction-amount.sent { color: #f28b82; }
+.transaction-amount.received { color: #81c995; }
 
 /* ---------- Promotional Banner ---------- */
 .promo-section {
@@ -521,7 +521,7 @@ ul, ol { list-style: none; }
 }
 
 .promo-card {
-    background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+    background: linear-gradient(135deg, #1a4a8a 0%, #0d3a6e 100%);
     border-radius: var(--radius-lg);
     padding: 20px;
     color: white;
@@ -691,8 +691,8 @@ ul, ol { list-style: none; }
     transition: color var(--transition-fast);
 }
 
-.nav-item.active .material-symbols-rounded { color: var(--gpay-blue); }
-.nav-item.active .nav-item-label { color: var(--gpay-blue); }
+.nav-item.active .material-symbols-rounded { color: #8ab4f8; }
+.nav-item.active .nav-item-label { color: #8ab4f8; }
 
 .nav-item.active::before {
     content: '';
@@ -702,13 +702,13 @@ ul, ol { list-style: none; }
     transform: translateX(-50%);
     width: 32px;
     height: 3px;
-    background: var(--gpay-blue);
+    background: #8ab4f8;
     border-radius: 0 0 4px 4px;
 }
 
 /* QR Scan center button */
 .nav-item-qr {
-    background: var(--gpay-blue);
+    background: #1a73e8;
     width: 52px;
     height: 52px;
     border-radius: var(--radius-full);
@@ -1046,7 +1046,7 @@ ul, ol { list-style: none; }
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #e8f0fe;
+    background: rgba(138, 180, 248, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1106,7 +1106,7 @@ ul, ol { list-style: none; }
 .pay-button {
     margin: 8px 24px 24px;
     padding: 14px;
-    background: var(--gpay-blue);
+    background: #1a73e8;
     color: white;
     font-size: 16px;
     font-weight: 500;
@@ -1126,7 +1126,7 @@ ul, ol { list-style: none; }
 }
 
 .pay-button:disabled {
-    background: #c4c7cc;
+    background: #3c4043;
     cursor: not-allowed;
     transform: none;
 }
@@ -1137,8 +1137,8 @@ ul, ol { list-style: none; }
     align-items: center;
     justify-content: space-between;
     padding: 12px 8px 12px 16px;
-    background: #ffffff;
-    border-bottom: 1px solid #e8eaed;
+    background: #2d2d2d;
+    border-bottom: 1px solid #3c4043;
     flex-shrink: 0;
 }
 
@@ -1151,7 +1151,7 @@ ul, ol { list-style: none; }
 .upi-logo-mark {
     font-size: 14px;
     font-weight: 700;
-    color: #5f6368;
+    color: #9aa0a6;
     background: linear-gradient(135deg, #4285F4, #34A853, #FBBC04, #EA4335);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1161,7 +1161,7 @@ ul, ol { list-style: none; }
 
 .upi-bank-name {
     font-size: 14px;
-    color: #5f6368;
+    color: #bdc1c6;
 }
 
 /* Payment Summary Card */
@@ -1171,20 +1171,20 @@ ul, ol { list-style: none; }
     justify-content: space-between;
     margin: 12px 16px;
     padding: 14px 16px;
-    background: #f8f9fa;
-    border: 1px solid #e8eaed;
+    background: #3c4043;
+    border: 1px solid #4a4a4a;
     border-radius: 12px;
 }
 
 .upi-pay-summary-amount {
     font-size: 16px;
     font-weight: 500;
-    color: #202124;
+    color: #e8eaed;
 }
 
 .upi-pay-summary-to {
     font-size: 13px;
-    color: #5f6368;
+    color: #9aa0a6;
     margin-top: 2px;
 }
 
@@ -1201,7 +1201,7 @@ ul, ol { list-style: none; }
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #ffffff;
+    background: #1a1a1a;
     gap: 24px;
     padding: 32px 24px;
 }
@@ -1209,7 +1209,7 @@ ul, ol { list-style: none; }
 .upi-pin-title {
     font-size: 16px;
     font-weight: 500;
-    color: #202124;
+    color: #e8eaed;
 }
 
 .upi-pin-dots {
@@ -1226,8 +1226,8 @@ ul, ol { list-style: none; }
 }
 
 .upi-dot.filled {
-    background: #202124;
-    border-color: #202124;
+    background: #8ab4f8;
+    border-color: #8ab4f8;
     animation: dotPop 0.2s ease;
 }
 
@@ -1244,9 +1244,9 @@ ul, ol { list-style: none; }
     justify-content: center;
     gap: 6px;
     padding: 8px 16px;
-    background: #ffffff;
+    background: #1a1a1a;
     font-size: 13px;
-    color: #EA4335;
+    color: #f28b82;
 }
 
 /* UPI Numpad */
@@ -1255,7 +1255,7 @@ ul, ol { list-style: none; }
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
     padding: 12px 24px 24px;
-    background: #f1f3f4;
+    background: #2d2d2d;
     flex-shrink: 0;
 }
 
@@ -1266,8 +1266,8 @@ ul, ol { list-style: none; }
     justify-content: center;
     font-size: 22px;
     font-weight: 400;
-    color: #202124;
-    background: #e8eaed;
+    color: #e8eaed;
+    background: #3c4043;
     border-radius: 24px;
     border: none;
     cursor: pointer;
@@ -1279,37 +1279,37 @@ ul, ol { list-style: none; }
 }
 
 .upi-numpad-key:hover {
-    background: #dadce0;
+    background: #4a4a4a;
 }
 
 .upi-numpad-key:active {
-    background: #d2d4d7;
+    background: #555;
 }
 
 .upi-numpad-backspace {
-    background: #dadce0;
+    background: #4a4a4a;
 }
 
 .upi-numpad-backspace .material-symbols-rounded {
     font-size: 22px;
-    color: #202124;
+    color: #e8eaed;
 }
 
 .upi-numpad-pay {
-    background: #1a73e8;
-    color: white;
+    background: #8ab4f8;
+    color: #1a1a1a;
     font-size: 16px;
     font-weight: 500;
     border-radius: 24px;
 }
 
 .upi-numpad-pay:hover {
-    background: #1557b0;
+    background: #aecbfa;
 }
 
 .upi-numpad-pay:disabled {
-    background: #c4c7cc;
-    color: #9aa0a6;
+    background: #3c4043;
+    color: #5f6368;
     cursor: not-allowed;
 }
 
@@ -1472,7 +1472,7 @@ ul, ol { list-style: none; }
 
 /* ---------- Profile Screen ---------- */
 .profile-header-card {
-    background: linear-gradient(135deg, #1a73e8, #4285f4);
+    background: linear-gradient(135deg, #1a4a8a, #1a73e8);
     margin: 16px;
     border-radius: var(--radius-lg);
     padding: 24px;
@@ -1594,7 +1594,7 @@ ul, ol { list-style: none; }
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f0f4ff;
+    background: rgba(138, 180, 248, 0.12);
 }
 
 .bank-details { flex: 1; }
@@ -1671,7 +1671,7 @@ ul, ol { list-style: none; }
 .ripple-effect {
     position: absolute;
     border-radius: var(--radius-full);
-    background: rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.08);
     transform: scale(0);
     animation: rippleAnim 0.6s linear;
     pointer-events: none;
@@ -1747,7 +1747,7 @@ ul, ol { list-style: none; }
 
 /* ---------- Skeleton Loading ---------- */
 .skeleton {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background: linear-gradient(90deg, #2d2d2d 25%, #3c4043 50%, #2d2d2d 75%);
     background-size: 200% 100%;
     animation: skeletonLoad 1.5s infinite;
     border-radius: var(--radius-sm);
@@ -1765,7 +1765,7 @@ ul, ol { list-style: none; }
     left: 0;
     right: 0;
     bottom: 0;
-    background: white;
+    background: #1a1a1a;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1795,8 +1795,8 @@ ul, ol { list-style: none; }
 .splash-loader {
     width: 40px;
     height: 40px;
-    border: 3px solid var(--gpay-blue-light);
-    border-top-color: var(--gpay-blue);
+    border: 3px solid rgba(138, 180, 248, 0.2);
+    border-top-color: #8ab4f8;
     border-radius: var(--radius-full);
     animation: spin 0.8s linear infinite;
     margin-top: 24px;
@@ -1878,8 +1878,8 @@ ul, ol { list-style: none; }
 
 .balance-check-btn {
     padding: 8px 16px;
-    background: var(--gpay-blue-light);
-    color: var(--gpay-blue);
+    background: rgba(138, 180, 248, 0.15);
+    color: #8ab4f8;
     border-radius: var(--radius-xl);
     font-size: 13px;
     font-weight: 500;
@@ -1887,7 +1887,7 @@ ul, ol { list-style: none; }
 }
 
 .balance-check-btn:hover {
-    background: #d2e3fc;
+    background: rgba(138, 180, 248, 0.25);
 }
 
 /* ---------- Rewards Section ---------- */
@@ -2040,8 +2040,8 @@ ul, ol { list-style: none; }
 
 /* ---------- Error Message Pill ---------- */
 .error-message-pill {
-    background: #fce8e6;
-    color: #d93025;
+    background: rgba(242, 139, 130, 0.15);
+    color: #f28b82;
     padding: 12px 20px;
     border-radius: var(--radius-xl);
     font-size: 14px;
@@ -2051,7 +2051,7 @@ ul, ol { list-style: none; }
     align-items: center;
     gap: 10px;
     animation: slideUp 0.3s ease;
-    box-shadow: 0 4px 12px rgba(217, 48, 37, 0.15);
+    box-shadow: 0 4px 12px rgba(242, 139, 130, 0.1);
 }
 
 .error-message-pill .material-symbols-rounded {
