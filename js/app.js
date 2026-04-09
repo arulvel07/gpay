@@ -997,19 +997,22 @@
         if (isFailed) {
             // Replace img with a cross icon span
             statusIcon.style.display = 'none';
-            // Remove any existing cross icon
             const existingCross = document.getElementById('txd-cross-icon');
             if (existingCross) existingCross.remove();
             const crossEl = document.createElement('span');
             crossEl.className = 'material-symbols-rounded';
             crossEl.id = 'txd-cross-icon';
-            crossEl.style.cssText = 'font-size: 18px; color: #f28b82;';
-            crossEl.textContent = 'close';
+            crossEl.style.cssText = 'font-size: 20px; color: #f28b82;';
+            crossEl.textContent = 'cancel';
             statusIcon.parentElement.insertBefore(crossEl, statusIcon);
             statusText.textContent = 'Failed';
             statusText.style.color = '#f28b82';
-            // Also make the name red
+            // Make name red
             $('#txd-name').style.color = '#f28b82';
+            // Make amount red
+            $('#txd-amount').style.color = '#f28b82';
+            // Red ring on avatar
+            avatar.style.boxShadow = '0 0 0 3px #f28b82';
         } else {
             statusIcon.style.display = '';
             const existingCross = document.getElementById('txd-cross-icon');
@@ -1017,6 +1020,8 @@
             statusText.textContent = 'Completed';
             statusText.style.color = '#34A853';
             $('#txd-name').style.color = '';
+            $('#txd-amount').style.color = '';
+            avatar.style.boxShadow = '';
         }
 
         // Date/time
