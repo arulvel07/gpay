@@ -1011,8 +1011,6 @@
             $('#txd-name').style.color = '#f28b82';
             // Make amount red
             $('#txd-amount').style.color = '#f28b82';
-            // Red ring on avatar
-            avatar.style.boxShadow = '0 0 0 3px #f28b82';
         } else {
             statusIcon.style.display = '';
             const existingCross = document.getElementById('txd-cross-icon');
@@ -1021,7 +1019,6 @@
             statusText.style.color = '#34A853';
             $('#txd-name').style.color = '';
             $('#txd-amount').style.color = '';
-            avatar.style.boxShadow = '';
         }
 
         // Date/time
