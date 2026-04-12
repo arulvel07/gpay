@@ -71,14 +71,17 @@ function formatCurrency(amount) {
 function formatDate(dateStr) {
     const date = new Date(dateStr);
     const now = new Date();
-    const diff = now - date;
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    if (days === 0) {
+    // Compare by calendar day (midnight-aligned) to avoid timezone/time-of-day issues
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const txDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const daysDiff = Math.round((today - txDay) / (1000 * 60 * 60 * 24));
+
+    if (daysDiff === 0) {
         return 'Today, ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-    } else if (days === 1) {
+    } else if (daysDiff === 1) {
         return 'Yesterday, ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-    } else if (days < 7) {
+    } else if (daysDiff < 7) {
         return date.toLocaleDateString('en-IN', { weekday: 'long' }) + ', ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
     } else {
         return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -195,7 +198,8 @@ const SupabaseDB = {
                     amount: txn.amount,
                     upi_id: txn.upiId || '',
                     note: txn.note || '',
-                    status: txn.status || 'completed'
+                    status: txn.status || 'completed',
+                    created_at: txn.date || new Date().toISOString()
                 });
 
             if (error) throw error;

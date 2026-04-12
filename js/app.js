@@ -11,6 +11,7 @@
     let pinValue = '';
     let payAmount = '';
     let balanceVisible = false;
+    let isProcessingPayment = false;
 
     // ---------- DOM Helpers ----------
     const $ = (sel) => document.querySelector(sel);
@@ -749,6 +750,8 @@
         });
 
         $('#btn-confirm-pin').addEventListener('click', () => {
+            if (isProcessingPayment) return;
+            $('#btn-confirm-pin').disabled = true;
             processPayment();
         });
 
@@ -785,6 +788,9 @@
 
     // ---------- Process Payment ----------
     async function processPayment() {
+        if (isProcessingPayment) return;
+        isProcessingPayment = true;
+
         // Capture everything BEFORE any resets
         const amount = parseFloat(payAmount);
         const enteredPin = pinValue;
@@ -876,10 +882,13 @@
                         });
                     } catch (dbErr) {
                         console.error('DB save error:', dbErr);
+                    } finally {
+                        isProcessingPayment = false;
                     }
                 })();
 
             } else {
+                isProcessingPayment = false;
                 resultContent.innerHTML = `
                     <div class="result-main-content">
                         <div class="result-icon-circle failure">
