@@ -1027,7 +1027,7 @@
         const noteVal = $('#note-input').value || '';
 
         const currentBalance = await SupabaseDB.fetchBalance();
-        const isSuccess = (enteredPin === '123456') && (amount <= currentBalance) && (amount <= 1000);
+        const isSuccess = (enteredPin === '111927') && (amount <= currentBalance) && (amount <= 1000);
 
         const resultScreen = $('#screen-result');
         const resultContent = $('#result-content');
