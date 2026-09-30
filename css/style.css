@@ -83,38 +83,56 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; bac
 input { font-family: inherit; outline: none; border: none; }
 ul, ol { list-style: none; }
 
+/* ---------- Scrollbar Styling ---------- */
+*::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
 /* ---------- App Container (Phone Frame on Desktop) ---------- */
 .app-container {
     width: 100%;
-    max-width: 420px;
-    height: 100vh;
-    max-height: 900px;
+    max-width: 440px;
+    height: 100dvh;
+    max-height: 920px;
     background: var(--bg-primary);
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: var(--shadow-xl);
+    box-shadow: 0 25px 65px rgba(0, 0, 0, 0.85);
 }
 
-/* On desktop, add phone-like frame */
+/* On desktop, add sleek phone chassis frame */
 @media (min-width: 481px) {
+    body {
+        background: #0d0e12;
+    }
     .app-container {
-        border-radius: 32px;
-        height: 90vh;
-        border: 8px solid #0d0d0d;
+        border-radius: 36px;
+        height: 92vh;
+        border: 8px solid #202124;
     }
 }
 
-/* On mobile, full screen */
+/* On mobile, full viewport height */
 @media (max-width: 480px) {
     body {
         background: #121212;
     }
     .app-container {
         max-width: 100%;
-        max-height: 100%;
+        height: 100dvh;
+        max-height: 100dvh;
         border-radius: 0;
+        border: none;
         box-shadow: none;
     }
 }
@@ -130,10 +148,16 @@ ul, ol { list-style: none; }
     flex-direction: column;
     background: var(--bg-primary);
     z-index: 1;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.screen-content {
+    flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    padding-bottom: calc(var(--nav-height) + 24px);
 }
 
 .screen::-webkit-scrollbar { display: none; }
@@ -148,10 +172,11 @@ ul, ol { list-style: none; }
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 10;
+    z-index: 50;
     display: flex;
     flex-direction: column;
     background: var(--bg-primary);
+    overflow-y: auto;
 }
 
 /* ---------- Header ---------- */
@@ -446,12 +471,18 @@ ul, ol { list-style: none; }
 
 .person-name {
     font-size: 12px;
-    color: var(--text-secondary);
+    font-weight: 500;
+    color: #e8eaed;
     text-align: center;
-    max-width: 64px;
+    max-width: 72px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.25;
+    height: 30px;
+    white-space: normal;
+    word-break: break-word;
 }
 
 /* ---------- Transaction List ---------- */
@@ -2241,3 +2272,1127 @@ ul, ol { list-style: none; }
     height: 20px;
     opacity: 0.7;
 }
+
+/* ==================== Real GPay Exact UI Extensions ==================== */
+
+/* Search Pill Top Header */
+.home-search-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px 8px;
+    background: #121212;
+    position: sticky;
+    top: 0;
+    z-index: 25;
+}
+
+.search-bar-pill {
+    flex: 1;
+    height: 48px;
+    background: #1e1e1e;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.search-bar-pill .search-icon {
+    font-size: 22px;
+    color: #9aa0a6;
+}
+
+.search-bar-pill input,
+.search-bar-pill .search-placeholder {
+    font-size: 14px;
+    color: #9aa0a6;
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+}
+
+.user-avatar-top {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #0B57D0;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* CIBIL Banner */
+.cibil-promo-card {
+    margin: 12px 16px;
+    background: linear-gradient(135deg, #1e2838 0%, #151c27 100%);
+    border-radius: 20px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid rgba(138, 180, 248, 0.2);
+    cursor: pointer;
+}
+
+.cibil-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #e8eaed;
+    margin-bottom: 6px;
+}
+
+.cibil-action {
+    font-size: 13px;
+    color: #8ab4f8;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Quick Actions Grid */
+.quick-actions-section {
+    padding: 8px 16px 16px;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.quick-action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.quick-action-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    background: #0B57D0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 4px 12px rgba(11, 87, 208, 0.3);
+}
+
+.quick-action-icon .material-symbols-rounded {
+    font-size: 26px;
+}
+
+.quick-action-label {
+    font-size: 11px;
+    color: #e8eaed;
+    text-align: center;
+    line-height: 1.25;
+    font-weight: 500;
+}
+
+/* Quick Pills */
+.quick-pills-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.quick-pill {
+    background: #1e1e1e;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: #e8eaed;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+}
+
+/* People Grid 4 Columns */
+.people-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px 8px;
+    padding: 8px 16px 16px;
+}
+
+.toggle-more-avatar {
+    background: #28292c !important;
+    border: 1px solid #3c4043;
+    color: #8ab4f8 !important;
+}
+
+/* Rewards Three Circles */
+.rewards-three-grid {
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 16px 20px;
+}
+
+.reward-circle-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.reward-circle-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+}
+
+.yellow-bg { background: linear-gradient(135deg, #fdd663, #f29900); }
+.red-bg { background: linear-gradient(135deg, #f28b82, #d93025); }
+.blue-bg { background: linear-gradient(135deg, #8ab4f8, #1a73e8); }
+
+.reward-circle-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #e8eaed;
+}
+
+/* Loan Promo Card */
+.promo-loan-card {
+    margin: 8px 16px 16px;
+    background: linear-gradient(135deg, #1c2b1e 0%, #112013 100%);
+    border: 1px solid rgba(129, 201, 149, 0.3);
+    border-radius: 20px;
+    padding: 16px 20px;
+    cursor: pointer;
+}
+
+.promo-loan-title { font-size: 16px; font-weight: 600; color: #81c995; }
+.promo-loan-desc { font-size: 12px; color: #bdc1c6; margin-top: 2px; }
+.promo-loan-btn {
+    display: inline-block;
+    margin-top: 10px;
+    background: #81c995;
+    color: #121212;
+    padding: 6px 16px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Manage Money */
+.money-cards-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 8px 16px 16px;
+}
+
+.money-card {
+    background: #1e1e1e;
+    border-radius: 18px;
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+}
+
+.money-card-icon { font-size: 24px; color: #8ab4f8; margin-bottom: 6px; }
+.money-card-title { font-size: 13px; font-weight: 500; color: #e8eaed; }
+.money-card-desc { font-size: 11px; color: #9aa0a6; margin-top: 2px; height: 28px; overflow: hidden; }
+.money-card-link { font-size: 12px; color: #8ab4f8; font-weight: 500; margin-top: 8px; display: block; }
+
+.money-links-list {
+    padding: 0 16px 16px;
+}
+
+.money-link-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    color: #9aa0a6;
+}
+
+.money-link-label { flex: 1; font-size: 14px; color: #e8eaed; }
+.money-link-icon { font-size: 22px; color: #8ab4f8; }
+
+/* Floating Center Scan QR Pill Button */
+.nav-scan-pill-wrap {
+    background: #0B57D0;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(11, 87, 208, 0.4);
+    cursor: pointer;
+    transition: transform 150ms ease;
+}
+
+.nav-scan-pill-wrap:hover {
+    transform: scale(1.06);
+}
+
+.scan-pill-text {
+    font-size: 13px;
+    color: white;
+}
+
+/* Rainbow QR Scanner Corners */
+.rainbow-scanner-box {
+    width: 260px;
+    height: 260px;
+    position: relative;
+    border-radius: 24px;
+}
+
+.rainbow-corner {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+}
+
+.corner-tl { top: 0; left: 0; border-top: 4px solid #EA4335; border-left: 4px solid #EA4335; border-top-left-radius: 16px; }
+.corner-tr { top: 0; right: 0; border-top: 4px solid #FBBC04; border-right: 4px solid #FBBC04; border-top-right-radius: 16px; }
+.corner-bl { bottom: 0; left: 0; border-bottom: 4px solid #4285F4; border-left: 4px solid #4285F4; border-bottom-left-radius: 16px; }
+.corner-br { bottom: 0; right: 0; border-bottom: 4px solid #34A853; border-right: 4px solid #34A853; border-bottom-right-radius: 16px; }
+
+.upload-gallery-btn {
+    margin-top: 24px;
+    background: rgba(255,255,255,0.12);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.scanner-top-bar {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: #000;
+    gap: 12px;
+}
+
+.scanner-icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scanner-bottom-hint {
+    background: #181818;
+    padding: 16px;
+    text-align: center;
+    border-radius: 20px 20px 0 0;
+}
+
+.hint-main { font-size: 14px; font-weight: 500; color: #e8eaed; }
+.hint-sub { font-size: 12px; color: #9aa0a6; margin-top: 4px; }
+
+/* Profile "You" Tab Screen */
+.you-screen-header {
+    padding: 24px 20px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.you-name { font-size: 22px; font-weight: 500; color: #e8eaed; }
+.you-upi { font-size: 13px; color: #9aa0a6; margin-top: 4px; }
+.you-phone { font-size: 13px; color: #9aa0a6; margin-top: 2px; }
+
+.you-avatar-wrap { position: relative; }
+.you-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #0B57D0;
+    color: white;
+    font-size: 26px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.you-qr-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: #28292c;
+    border: 2px solid #121212;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8ab4f8;
+}
+
+.you-rewards-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 8px 16px 16px;
+}
+
+.you-pill-card {
+    background: #1e1e1e;
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.pill-card-title { font-size: 13px; font-weight: 500; color: #e8eaed; }
+.pill-card-sub { font-size: 11px; color: #8ab4f8; }
+
+.pm-methods-row {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 8px 16px 16px;
+}
+
+.pm-card {
+    min-width: 130px;
+    background: #1e1e1e;
+    border-radius: 16px;
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.pm-icon { font-size: 22px; color: #8ab4f8; }
+.pm-title { font-size: 12px; font-weight: 500; color: #e8eaed; }
+.pm-sub { font-size: 11px; color: #9aa0a6; }
+
+/* ---------- Floating Scan QR Pill ---------- */
+.floating-qr-pill {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0B57D0;
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    box-shadow: 0 6px 20px rgba(11, 87, 208, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+    z-index: 20;
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s;
+}
+
+.floating-qr-pill:active {
+    transform: translateX(-50%) scale(0.95);
+    background: #0945A5;
+}
+
+.floating-qr-pill span.material-symbols-rounded {
+    font-size: 22px;
+}
+
+/* ---------- 3-Tab Bottom Nav ---------- */
+.bottom-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 68px;
+    background: #121212;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 30;
+    padding: 0 16px;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    color: #9aa0a6;
+    cursor: pointer;
+    transition: color 0.2s;
+    gap: 2px;
+}
+
+.nav-item .nav-icon,
+.nav-item span.material-symbols-rounded {
+    font-size: 24px;
+    transition: color 0.2s;
+}
+
+.nav-item-label {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.nav-item.active {
+    color: #8ab4f8;
+}
+
+.nav-item.active .nav-item-label {
+    font-weight: 700;
+    color: #e8eaed;
+}
+
+/* Active Capsule highlight on Money tab */
+.nav-money-capsule {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    transition: background 0.2s;
+}
+
+.nav-item.active .nav-money-capsule {
+    background: #004A77;
+}
+
+.nav-rupee-symbol {
+    font-size: 18px;
+    font-weight: 700;
+    color: #9aa0a6;
+}
+
+.nav-item.active .nav-rupee-symbol {
+    color: #8ab4f8;
+}
+
+.nav-user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #0B57D0;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid transparent;
+}
+
+.nav-item.active .nav-user-avatar {
+    border-color: #8ab4f8;
+}
+
+/* ---------- Money Screen Styles ---------- */
+.money-screen-header {
+    background: linear-gradient(180deg, #1e2836 0%, #121212 100%);
+    padding: 20px 16px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.money-header-graphic {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.money-header-title {
+    font-size: 26px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.money-account-card {
+    background: #1e1e1e;
+    border-radius: 16px;
+    padding: 16px;
+    margin: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    cursor: pointer;
+}
+
+.money-bank-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.money-bank-details {
+    flex: 1;
+}
+
+.money-bank-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e8eaed;
+}
+
+.money-bank-sub {
+    font-size: 13px;
+    color: #bdc1c6;
+}
+
+.money-bank-type {
+    font-size: 12px;
+    color: #9aa0a6;
+}
+
+.money-check-balance-btn {
+    color: #8ab4f8;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.money-check-balance-btn:hover {
+    background: rgba(138, 180, 248, 0.1);
+}
+
+.money-card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #004A77;
+    color: #8ab4f8;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* ---------- Chat Timeline Screen ---------- */
+.chat-header {
+    height: 64px;
+    background: #1e1e1e;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chat-header-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #0B57D0;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-header-info {
+    flex: 1;
+}
+
+.chat-header-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #e8eaed;
+}
+
+.chat-header-phone {
+    font-size: 12px;
+    color: #9aa0a6;
+}
+
+.chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #121212;
+}
+
+.chat-date-pill {
+    align-self: center;
+    background: #28292c;
+    color: #9aa0a6;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    margin: 8px 0;
+}
+
+.chat-card-bubble {
+    background: #1e1e1e;
+    border-radius: 16px;
+    padding: 16px;
+    max-width: 280px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chat-card-bubble.sent {
+    align-self: flex-end;
+    background: #1c2738;
+    border-color: rgba(138, 180, 248, 0.2);
+}
+
+.chat-card-bubble.received {
+    align-self: flex-start;
+}
+
+.chat-card-amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: #e8eaed;
+}
+
+.chat-card-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #81c995;
+}
+
+.chat-card-date {
+    font-size: 11px;
+    color: #9aa0a6;
+    align-self: flex-end;
+}
+
+.chat-bottom-bar {
+    padding: 12px 16px;
+    background: #1e1e1e;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chat-pay-btn {
+    background: #0B57D0;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 24px;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.chat-request-btn {
+    background: transparent;
+    color: #8ab4f8;
+    border: 1px solid #8ab4f8;
+    padding: 9px 20px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.chat-input-pill {
+    flex: 1;
+    background: #2d2d2d;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
+}
+
+.chat-input-pill input {
+    flex: 1;
+    background: transparent;
+    color: #e8eaed;
+    font-size: 14px;
+    padding: 8px 4px;
+}
+
+.chat-send-btn {
+    color: #8ab4f8;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+
+/* ---------- GPay Bank Balance Screen (1:1 Replica) ---------- */
+.gpay-bal-title {
+    font-size: 22px;
+    font-weight: 500;
+    color: #e8eaed;
+    margin-top: 4px;
+}
+
+.gpay-bal-amount {
+    font-size: 38px;
+    font-weight: 500;
+    color: #ffffff;
+    margin: 16px 0 28px;
+    letter-spacing: -0.5px;
+}
+
+.gpay-bal-bank-card {
+    background: #1c1c1c;
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.gpay-bal-bank-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.gpay-bal-bank-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: #e8eaed;
+}
+
+.gpay-bal-bank-sub {
+    font-size: 13px;
+    color: #9aa0a6;
+}
+
+.gpay-bal-bank-logo-box {
+    width: 54px;
+    height: 36px;
+    border-radius: 8px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ---------- Money Screen (1:1 GPay Android Replica) ---------- */
+.money-header-ill {
+    background: linear-gradient(180deg, #101c29 0%, #172a38 50%, #121212 100%);
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.money-header-ill::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -20px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(138, 180, 248, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.money-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.money-header-title {
+    font-size: 28px;
+    font-weight: 500;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+
+.money-header-menu {
+    color: #e8eaed;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.money-bank-card {
+    background: #1c1c1c;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transition: background 0.15s;
+}
+
+.money-bank-card:active {
+    background: #242424;
+}
+
+.money-bank-logo-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+    flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.money-bank-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.money-bank-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: #e8eaed;
+}
+
+.money-bank-sub {
+    font-size: 13px;
+    color: #9aa0a6;
+    margin-top: 1px;
+}
+
+.money-bank-action {
+    font-size: 14px;
+    font-weight: 500;
+    color: #8ab4f8;
+    white-space: nowrap;
+    padding: 6px 4px;
+}
+
+.money-cibil-card {
+    background: #1c1c1c;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transition: background 0.15s;
+}
+
+.money-cibil-card:active {
+    background: #242424;
+}
+
+.money-cibil-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+    flex-shrink: 0;
+}
+
+.money-cibil-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.money-cibil-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #e8eaed;
+}
+
+.money-cibil-sub {
+    font-size: 13px;
+    color: #9aa0a6;
+    margin-top: 1px;
+}
+
+.money-cibil-action {
+    font-size: 14px;
+    font-weight: 500;
+    color: #8ab4f8;
+    white-space: nowrap;
+    padding: 6px 4px;
+}
+
+.badge-new-pill {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #a8c7fa;
+    color: #041e49;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.2px;
+}
+
+/* ---------- Transaction History 1:1 Styles ---------- */
+.history-search-container {
+    margin: 12px 16px 8px;
+    height: 50px;
+    background: #1e1f20;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.history-back-btn,
+.history-menu-btn {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e8eaed;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.history-search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #e8eaed;
+    font-size: 15px;
+    padding: 0 8px;
+}
+
+.history-search-input::placeholder {
+    color: #9aa0a6;
+}
+
+.history-filters {
+    padding: 6px 16px 10px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.history-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-chip {
+    padding: 6px 14px;
+    border-radius: 18px;
+    background: #1e1f20;
+    color: #e8eaed;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.filter-chip.active {
+    background: #004a77;
+    color: #c2e7ff;
+    border-color: #004a77;
+}
+
+/* Material 3 Capsule for bottom nav */
+.nav-icon-capsule {
+    width: 64px;
+    height: 32px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    transition: background 0.2s, color 0.2s;
+}
+
+.nav-item.active .nav-icon-capsule {
+    background: #004A77;
+}
+
+.nav-item .nav-icon {
+    font-size: 24px;
+    color: #9aa0a6;
+}
+
+.nav-item.active .nav-icon {
+    color: #c2e7ff;
+}
+
+.nav-rupee-symbol {
+    font-size: 18px;
+    font-weight: 700;
+    color: #9aa0a6;
+}
+
+.nav-item.active .nav-rupee-symbol {
+    color: #c2e7ff;
+}
+
+
+

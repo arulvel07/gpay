@@ -28,7 +28,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css?v=29">
+    <link rel="stylesheet" href="css/style.css?v=30">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -62,142 +62,147 @@
         </div>
 
         <!-- ==================== HOME SCREEN ==================== -->
-        <div class="screen hidden" id="screen-home">
-            <!-- Home Header -->
-            <div class="home-header">
-                <div class="home-header-left">
-                    <div class="gpay-logo">
-                        <div class="gpay-logo-icon">
-                            <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
-                                <path
-                                    d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
-                                    fill="#FFC107" />
-                                <path
-                                    d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"
-                                    fill="#FF3D00" />
-                                <path
-                                    d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0124 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"
-                                    fill="#4CAF50" />
-                                <path
-                                    d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 01-4.087 5.571l.001-.001 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"
-                                    fill="#1976D2" />
-                            </svg>
-                        </div>
-                        <span class="gpay-logo-text">Google <span>Pay</span></span>
-                    </div>
+        <div class="screen active" id="screen-home">
+            <!-- Top Search Bar Header -->
+            <div class="home-search-header">
+                <div class="search-bar-pill ripple" id="search-bar">
+                    <span class="material-symbols-rounded search-icon">search</span>
+                    <input type="text" placeholder="Pay friends and merchants" id="search-input" readonly>
                 </div>
-                <div class="home-header-right">
-                    <button class="header-action ripple" id="btn-notification">
-                        <span class="material-symbols-rounded">notifications</span>
-                    </button>
-                    <div class="user-avatar ripple" id="btn-profile-home"></div>
-                </div>
+                <div class="user-avatar-top ripple" id="btn-profile-home"></div>
             </div>
 
             <div class="screen-content" id="home-content">
-                <!-- Search Bar -->
-                <div class="search-bar ripple" id="search-bar">
-                    <span class="material-symbols-rounded">search</span>
-                    <input type="text" placeholder="Pay by name or phone number" id="search-input" readonly>
-                </div>
-
-                <!-- Balance Card -->
-                <div class="balance-card" id="balance-card">
-                    <div class="balance-left">
-                        <div class="balance-label">Bank Balance</div>
-                        <div class="balance-amount" id="balance-display">••••••</div>
-                        <div class="balance-bank">
-                            <span class="material-symbols-rounded" style="font-size: 14px;">account_balance</span>
-                            <span id="bank-name-display">Axis Bank</span>
-                        </div>
+                <!-- CIBIL Score Promo Card -->
+                <div class="cibil-promo-card ripple" id="cibil-banner">
+                    <div class="cibil-promo-text">
+                        <div class="cibil-title">Get your free CIBIL score instantly!</div>
+                        <div class="cibil-action">Check now <span class="material-symbols-rounded">arrow_forward</span></div>
                     </div>
-                    <button class="balance-check-btn ripple" id="btn-check-balance">Check balance</button>
+                    <div class="cibil-illustration">
+                        <span class="material-symbols-rounded" style="font-size: 48px; color: #8ab4f8;">analytics</span>
+                    </div>
                 </div>
 
-                <!-- Quick Actions -->
-                <div class="quick-actions">
+                <!-- Quick Actions Grid -->
+                <div class="quick-actions-section">
                     <div class="quick-actions-grid" id="quick-actions-grid">
                         <!-- Populated by JS -->
+                    </div>
+                    
+                    <!-- Quick Pill Badges -->
+                    <div class="quick-pills-row">
+                        <div class="quick-pill ripple"><span class="pill-emoji">🚀</span> UPI Lite Activate</div>
+                        <div class="quick-pill ripple"><span class="pill-emoji">🏆</span> Rewards New</div>
                     </div>
                 </div>
 
                 <!-- People Section -->
                 <div class="section-header">
                     <span class="section-title">People</span>
-                    <span class="section-action ripple" id="btn-view-all-people">View all</span>
                 </div>
                 <div class="people-section">
-                    <div class="people-scroll" id="people-scroll">
+                    <div class="people-grid" id="people-scroll">
                         <!-- Populated by JS -->
-                    </div>
-                </div>
-
-                <!-- Promotional Banner -->
-                <div class="promo-section">
-                    <div class="promo-card ripple">
-                        <div class="promo-icon">
-                            <span class="material-symbols-rounded">redeem</span>
-                        </div>
-                        <div class="promo-content">
-                            <div class="promo-title">Rewards & Cashback</div>
-                            <div class="promo-desc">Complete payments to earn scratch cards</div>
-                        </div>
-                        <span class="material-symbols-rounded" style="opacity: 0.7;">chevron_right</span>
                     </div>
                 </div>
 
                 <!-- Bills & Recharges -->
                 <div class="section-header">
                     <span class="section-title">Bills & recharges</span>
-                    <span class="section-action ripple">View all</span>
+                    <span class="section-action ripple" id="btn-view-bills">Manage <span class="material-symbols-rounded" style="font-size: 16px;">chevron_right</span></span>
                 </div>
                 <div class="bills-grid" id="bills-grid">
                     <!-- Populated by JS -->
                 </div>
 
-                <!-- Offers -->
+                <!-- Businesses -->
                 <div class="section-header">
-                    <span class="section-title">Offers for you</span>
+                    <span class="section-title">Businesses</span>
+                    <span class="section-action ripple" id="btn-view-biz">Explore <span class="material-symbols-rounded" style="font-size: 16px;">chevron_right</span></span>
                 </div>
-                <div class="offers-scroll" id="offers-scroll">
-                    <!-- Populated by JS -->
+                <div class="businesses-section">
+                    <div class="people-grid" id="businesses-grid">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
 
-                <!-- Recent Transactions -->
+                <!-- Offers & Rewards -->
                 <div class="section-header">
-                    <span class="section-title">Recent activity</span>
-                    <span class="section-action ripple" id="btn-view-all-transactions">View all</span>
+                    <span class="section-title">Offers & rewards</span>
                 </div>
-                <div class="transaction-list" id="home-transactions">
-                    <!-- Populated by JS -->
+                <div class="rewards-three-grid">
+                    <div class="reward-circle-item ripple" id="btn-rewards">
+                        <div class="reward-circle-icon yellow-bg">🏆</div>
+                        <span class="reward-circle-label">Rewards</span>
+                    </div>
+                    <div class="reward-circle-item ripple" id="btn-offers">
+                        <div class="reward-circle-icon red-bg">🏷️</div>
+                        <span class="reward-circle-label">Offers</span>
+                    </div>
+                    <div class="reward-circle-item ripple" id="btn-referrals">
+                        <div class="reward-circle-icon blue-bg">🎁</div>
+                        <span class="reward-circle-label">Referrals</span>
+                    </div>
                 </div>
 
-                <div style="height: 32px;"></div>
+                <!-- Promotional Loan Banner -->
+                <div class="promo-loan-card ripple">
+                    <div class="promo-loan-content">
+                        <div class="promo-loan-title">Flat ₹1,000 for you!</div>
+                        <div class="promo-loan-desc">Get cashback on loan disbursement</div>
+                        <div class="promo-loan-btn">Claim now</div>
+                    </div>
+                </div>
+
+                <!-- Manage Your Money -->
+                <div class="section-header">
+                    <span class="section-title">Manage your money</span>
+                </div>
+                <div class="money-cards-row">
+                    <div class="money-card ripple">
+                        <span class="material-symbols-rounded money-card-icon">savings</span>
+                        <div class="money-card-title">Personal loan</div>
+                        <div class="money-card-desc">Up to ₹40 lakh, instant approval</div>
+                        <span class="money-card-link">Check details</span>
+                    </div>
+                    <div class="money-card ripple">
+                        <span class="material-symbols-rounded money-card-icon">monetization_on</span>
+                        <div class="money-card-title">Gold loan</div>
+                        <div class="money-card-desc">Interest rate starting at 0.96% monthly</div>
+                        <span class="money-card-link">Apply now</span>
+                    </div>
+                </div>
+
+                <div class="money-links-list">
+                    <div class="money-link-item ripple" id="btn-cibil">
+                        <span class="material-symbols-rounded money-link-icon">fact_check</span>
+                        <span class="money-link-label">Check your CIBIL score for free</span>
+                        <span class="material-symbols-rounded">chevron_right</span>
+                    </div>
+                    <div class="money-link-item ripple" id="btn-view-all-transactions">
+                        <span class="material-symbols-rounded money-link-icon">history</span>
+                        <span class="money-link-label">See transaction history</span>
+                        <span class="material-symbols-rounded">chevron_right</span>
+                    </div>
+                    <div class="money-link-item ripple" id="btn-check-balance">
+                        <span class="material-symbols-rounded money-link-icon">account_balance</span>
+                        <span class="money-link-label">Check bank balance</span>
+                        <span class="material-symbols-rounded">chevron_right</span>
+                    </div>
+                </div>
+
+                <div style="height: 48px;"></div>
             </div>
 
-            <!-- Bottom Nav -->
-            <div class="bottom-nav" id="bottom-nav">
-                <div class="nav-item active ripple" data-screen="home" id="nav-home">
-                    <span class="material-symbols-rounded">home</span>
-                    <span class="nav-item-label">Home</span>
-                </div>
-                <div class="nav-item ripple" data-screen="history" id="nav-history">
-                    <span class="material-symbols-rounded">receipt_long</span>
-                    <span class="nav-item-label">Activity</span>
-                </div>
-                <div class="nav-item nav-item-qr ripple" data-screen="scanner" id="nav-scanner">
-                    <span class="material-symbols-rounded">qr_code_scanner</span>
-                </div>
-                <div class="nav-item ripple" data-screen="offers" id="nav-offers">
-                    <span class="material-symbols-rounded">local_offer</span>
-                    <span class="nav-item-label">Offers</span>
-                </div>
-                <div class="nav-item ripple" data-screen="profile" id="nav-profile">
-                    <span class="material-symbols-rounded">person</span>
-                    <span class="nav-item-label">Profile</span>
-                </div>
+            <!-- Floating QR Pill Button -->
+            <div class="floating-qr-pill ripple" id="btn-floating-qr">
+                <span class="material-symbols-rounded">qr_code_scanner</span>
+                <span>Scan QR</span>
             </div>
         </div>
+
+
 
         <!-- ==================== QR SCANNER SCREEN ==================== -->
         <div class="screen screen-overlay hidden" id="screen-scanner">
@@ -344,8 +349,9 @@
                 <button class="upi-numpad-key upi-numpad-backspace ripple" data-key="back">
                     <span class="material-symbols-rounded">backspace</span>
                 </button>
-                <button class="upi-numpad-key ripple" data-key="0">0</button>
-                <button class="upi-numpad-key upi-numpad-pay ripple" id="btn-confirm-pin" disabled>Pay</button>
+                <button class="upi-numpad-key upi-numpad-pay ripple" id="btn-confirm-pin" disabled>
+                    <span class="material-symbols-rounded" style="font-size: 24px; font-weight: 600;">check</span>
+                </button>
             </div>
         </div>
 
@@ -423,18 +429,19 @@
             </div>
         </div>
 
-        <!-- ==================== HISTORY SCREEN ==================== -->
-        <div class="screen hidden" id="screen-history">
-            <div class="header">
-                <span class="header-title" style="padding-left: 4px;">Transaction History</span>
-                <div class="header-actions">
-                    <button class="header-action ripple">
-                        <span class="material-symbols-rounded">filter_list</span>
-                    </button>
-                </div>
+        <!-- ==================== TRANSACTION HISTORY SCREEN (1:1 GPAY REPLICA) ==================== -->
+        <div class="screen screen-overlay hidden" id="screen-history">
+            <div class="history-search-container">
+                <button class="history-back-btn ripple" id="btn-history-back">
+                    <span class="material-symbols-rounded">arrow_back</span>
+                </button>
+                <input type="text" class="history-search-input" id="history-search-input" placeholder="Search transactions" autocomplete="off">
+                <button class="history-menu-btn ripple">
+                    <span class="material-symbols-rounded">more_vert</span>
+                </button>
             </div>
             <div class="history-filters" id="history-filters">
-                <div class="filter-chip active" data-filter="all">All</div>
+                <div class="filter-chip active" data-filter="all">Status ▾</div>
                 <div class="filter-chip" data-filter="sent">Sent</div>
                 <div class="filter-chip" data-filter="received">Received</div>
                 <div class="filter-chip" data-filter="rewards">Rewards</div>
@@ -447,9 +454,16 @@
         </div>
 
         <!-- ==================== OFFERS SCREEN ==================== -->
-        <div class="screen hidden" id="screen-offers">
-            <div class="header">
-                <span class="header-title" style="padding-left: 4px;">Offers & Rewards</span>
+        <div class="screen screen-overlay hidden" id="screen-offers">
+            <div class="header" style="background: #121212; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <button class="header-back ripple" id="btn-offers-back" style="color: #ffffff;">
+                    <span class="material-symbols-rounded">arrow_back</span>
+                </button>
+                <span class="header-title" style="color: #ffffff; padding-left: 4px;">Offers & rewards</span>
+                <div style="flex: 1;"></div>
+                <button class="header-action ripple" style="color: #ffffff;">
+                    <span class="material-symbols-rounded">more_vert</span>
+                </button>
             </div>
             <div class="screen-content" style="padding: 16px;">
                 <!-- Rewards Banner -->
@@ -466,6 +480,74 @@
                     <span class="section-title">Available Offers</span>
                 </div>
                 <div id="offers-list" style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== MONEY SCREEN (1:1 GPAY REPLICA) ==================== -->
+        <div class="screen hidden" id="screen-money">
+            <div class="money-header-ill">
+                <div class="money-header-top">
+                    <span class="money-header-title">Money</span>
+                    <button class="money-header-menu ripple">
+                        <span class="material-symbols-rounded">more_vert</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="screen-content" style="padding: 12px 16px 24px;">
+                <!-- Bank Account Card -->
+                <div class="money-bank-card ripple" id="btn-money-check-bal">
+                    <div class="money-bank-logo-wrap">
+                        <span class="material-symbols-rounded" style="color: #0B57D0; font-size: 26px;">account_balance</span>
+                    </div>
+                    <div class="money-bank-info">
+                        <div class="money-bank-name" id="money-bank-name">Axis Bank ••••4521</div>
+                        <div class="money-bank-sub">Savings account</div>
+                    </div>
+                    <div class="money-bank-action">Check balance</div>
+                </div>
+
+                <!-- CIBIL Score Card -->
+                <div class="money-cibil-card ripple" id="btn-money-cibil">
+                    <div class="money-cibil-icon-wrap">
+                        <span class="material-symbols-rounded" style="color: #8ab4f8; font-size: 24px;">speed</span>
+                    </div>
+                    <div class="money-cibil-info">
+                        <div class="money-cibil-title">CIBIL score</div>
+                        <div class="money-cibil-sub">Check for free, instantly</div>
+                    </div>
+                    <div class="money-cibil-action">Check</div>
+                </div>
+
+                <!-- Credit for you -->
+                <div class="section-header" style="padding: 20px 0 12px;">
+                    <span class="section-title">Credit for you</span>
+                </div>
+                <div class="money-cards-row">
+                    <div class="money-card ripple">
+                        <span class="material-symbols-rounded money-card-icon">savings</span>
+                        <div class="money-card-title">Personal loan</div>
+                        <div class="money-card-desc">Up to ₹40 lakh, instant approval</div>
+                        <span class="money-card-link">Check details</span>
+                    </div>
+                    <div class="money-card ripple" style="position: relative;">
+                        <span class="badge-new-pill">New</span>
+                        <span class="material-symbols-rounded money-card-icon">credit_card</span>
+                        <div class="money-card-title">Flex by Google Pay</div>
+                        <div class="money-card-desc">UPI credit card made simple</div>
+                        <span class="money-card-link">Explore</span>
+                    </div>
+                </div>
+
+                <!-- Transaction history -->
+                <div class="section-header" style="padding: 24px 0 12px;">
+                    <span class="section-title" style="font-size: 18px; font-weight: 500;">Transaction history</span>
+                    <span class="section-action ripple" id="btn-money-see-all">See all <span class="material-symbols-rounded" style="font-size: 16px;">chevron_right</span></span>
+                </div>
+
+                <div class="transaction-list" id="money-transactions">
                     <!-- Populated by JS -->
                 </div>
             </div>
@@ -579,6 +661,65 @@
             </div>
         </div>
 
+        <!-- ==================== BANK BALANCE SCREEN (GPAY 1:1 REPLICA) ==================== -->
+        <div class="screen screen-overlay hidden" id="screen-bank-balance">
+            <div class="header" style="background: transparent; border: none; padding: 8px 12px;">
+                <button class="header-back ripple" id="btn-bank-bal-back" style="color: #ffffff;">
+                    <span class="material-symbols-rounded">arrow_back</span>
+                </button>
+                <div style="flex: 1;"></div>
+                <button class="header-action ripple" style="color: #ffffff;">
+                    <span class="material-symbols-rounded">more_vert</span>
+                </button>
+            </div>
+
+            <div class="screen-content" style="padding: 0 20px 24px;">
+                <div class="gpay-bal-title">Bank balance</div>
+
+                <div class="gpay-bal-amount" id="bal-page-amount">₹4,532.00</div>
+
+                <div class="gpay-bal-bank-card ripple">
+                    <div class="gpay-bal-bank-info">
+                        <div class="gpay-bal-bank-name" id="bal-page-bank-name">Axis Bank ••••4521</div>
+                        <div class="gpay-bal-bank-sub" id="bal-page-bank-type">Savings account</div>
+                    </div>
+                    <div class="gpay-bal-bank-logo-box">
+                        <span class="material-symbols-rounded" style="color: #0B57D0; font-size: 26px;">account_balance</span>
+                    </div>
+                </div>
+
+                <div class="section-header" style="padding: 24px 0 12px;">
+                    <span class="section-title" style="font-size: 18px; font-weight: 500;">Transaction history</span>
+                    <span class="section-action ripple" id="btn-bal-page-see-all">See all <span class="material-symbols-rounded" style="font-size: 16px;">chevron_right</span></span>
+                </div>
+
+                <div class="transaction-list" id="bal-page-transactions">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Shared Bottom Nav (3 Tabs matching GPay Android) -->
+        <div class="bottom-nav" id="bottom-nav">
+            <div class="nav-item active ripple" data-screen="home" id="nav-home">
+                <div class="nav-icon-capsule">
+                    <span class="material-symbols-rounded nav-icon">home</span>
+                </div>
+                <span class="nav-item-label">Home</span>
+            </div>
+            <div class="nav-item ripple" data-screen="money" id="nav-money">
+                <div class="nav-icon-capsule">
+                    <span class="nav-rupee-symbol">₹</span>
+                </div>
+                <span class="nav-item-label">Money</span>
+            </div>
+            <div class="nav-item ripple" data-screen="profile" id="nav-you">
+                <div class="nav-icon-capsule">
+                    <div class="nav-user-avatar" id="nav-you-avatar">N</div>
+                </div>
+                <span class="nav-item-label">You</span>
+            </div>
+        </div>
     </div>
 
     <!-- Edit Payee Modal -->
@@ -644,11 +785,11 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/supabase-config.js?v=29"></script>
-    <script src="js/data.js?v=29"></script>
-    <script src="js/animations.js?v=29"></script>
-    <script src="js/qr-scanner.js?v=29"></script>
-    <script src="js/app.js?v=29"></script>
+    <script src="js/supabase-config.js?v=30"></script>
+    <script src="js/data.js?v=30"></script>
+    <script src="js/animations.js?v=30"></script>
+    <script src="js/qr-scanner.js?v=30"></script>
+    <script src="js/app.js?v=30"></script>
 
 </body>
 

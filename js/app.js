@@ -37,16 +37,8 @@
     }
 
     // ---------- Initialize App ----------
-    async function init() {
-        try {
-            // Load data from Supabase (or fallback to local)
-            await SupabaseDB.fetchTransactions();
-            await SupabaseDB.fetchBalance();
-            await SupabaseDB.fetchContacts();
-        } catch (err) {
-            console.error('Failed to init Supabase data, falling back to local:', err);
-        }
-
+    function init() {
+        // Immediate initial render using local state
         try {
             renderHome();
             renderHistory();
@@ -61,7 +53,7 @@
             console.error('Render error:', err);
         }
 
-        // Splash screen
+        // Fast splash screen fade-out
         setTimeout(() => {
             const splash = $('#splash-screen');
             if (splash) {
@@ -69,9 +61,9 @@
                 setTimeout(() => {
                     splash.style.display = 'none';
                     showScreen('home');
-                }, 500);
+                }, 400);
             }
-        }, 1800);
+        }, 1000);
 
         // Apply ripple effects
         initRipples();
@@ -81,6 +73,21 @@
             history.replaceState(null, '', '#home');
         }
         window.addEventListener('popstate', handlePopState);
+
+        // Background Supabase sync without blocking UI
+        (async () => {
+            try {
+                await SupabaseDB.fetchTransactions();
+                await SupabaseDB.fetchBalance();
+                await SupabaseDB.fetchContacts();
+                // Re-render data-dependent components once data is loaded
+                renderHome();
+                renderHistory();
+                renderUserProfile();
+            } catch (err) {
+                console.error('Supabase background sync error:', err);
+            }
+        })();
     }
 
     // ---------- History State ----------
@@ -93,10 +100,14 @@
     }
 
     function popHistory() {
-        if (!isHistoryNavigating) {
-            isHistoryNavigating = true;
-            history.back();
-            setTimeout(() => { isHistoryNavigating = false; }, 100);
+        if (window.location.hash.startsWith('#overlay-')) {
+            if (!isHistoryNavigating) {
+                isHistoryNavigating = true;
+                history.back();
+                setTimeout(() => { isHistoryNavigating = false; }, 150);
+            }
+        } else {
+            history.replaceState(null, '', '#' + currentScreen);
         }
     }
 
@@ -107,10 +118,6 @@
         const hash = window.location.hash.replace('#', '');
 
         const result = $('#screen-result');
-        const pin = $('#screen-pin');
-        const payment = $('#screen-payment');
-        const scanner = $('#screen-scanner');
-        const txDetail = $('#screen-transaction-detail');
 
         if (result && !result.classList.contains('hidden')) {
             result.style.opacity = '0';
@@ -120,65 +127,46 @@
                 result.style.opacity = '';
                 showScreen('home');
             }, 300);
-        } else if (pin && !pin.classList.contains('hidden')) {
-            const el = $('#screen-pin');
-            slideOut(el, 'right');
-            setTimeout(() => el.classList.add('hidden'), 350);
-        } else if (payment && !payment.classList.contains('hidden')) {
-            const el = $('#screen-payment');
-            slideOut(el, 'right');
-            setTimeout(() => el.classList.add('hidden'), 350);
-        } else if (scanner && !scanner.classList.contains('hidden')) {
-            if (typeof stopScanning === 'function') stopScanning();
-            const el = $('#screen-scanner');
-            slideOut(el, 'right');
-            setTimeout(() => el.classList.add('hidden'), 350);
-        } else if (txDetail && !txDetail.classList.contains('hidden')) {
-            slideOut(txDetail, 'right');
-            setTimeout(() => txDetail.classList.add('hidden'), 350);
+        } else if (overlayStack.length > 0) {
+            const topOverlay = overlayStack[overlayStack.length - 1];
+            if (topOverlay === 'scanner' && typeof stopScanning === 'function') {
+                stopScanning();
+            }
+            closeOverlayDirectly(topOverlay);
         } else {
-            const target = ['home', 'history', 'offers', 'profile'].includes(hash) ? hash : 'home';
-
-            const tabScreens = ['home', 'history', 'offers', 'profile'];
-            tabScreens.forEach(s => {
-                const el = $(`#screen-${s}`);
-                if (s === target) {
-                    el.classList.remove('hidden');
-                    el.classList.add('active');
-                } else {
-                    el.classList.add('hidden');
-                    el.classList.remove('active');
-                }
-            });
-            currentScreen = target;
-
-            $$('.nav-item').forEach(n => n.classList.remove('active'));
-            const activeNav = $(`.nav-item[data-screen="${target}"]`);
-            if (activeNav) activeNav.classList.add('active');
+            const target = ['home', 'money', 'profile'].includes(hash) ? hash : 'home';
+            showScreen(target);
         }
 
-        setTimeout(() => { isHistoryNavigating = false; }, 100);
+        setTimeout(() => { isHistoryNavigating = false; }, 150);
     }
 
     // ---------- Navigation ----------
+    let activePinIntent = 'payment'; // 'payment' or 'check-balance'
+
+    function triggerBankBalancePin() {
+        activePinIntent = 'check-balance';
+        payAmount = '0';
+        currentPayee = { name: APP_DATA.user.bank.name, upiId: APP_DATA.user.bank.account };
+        showPinScreen();
+    }
+
     function setupNavigation() {
         $$('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
                 const screen = item.dataset.screen;
                 if (!screen) return;
-
-                if (screen === 'scanner') {
-                    openScanner();
-                    return;
-                }
-
-                // Update active nav
-                $$('.nav-item').forEach(n => n.classList.remove('active'));
-                item.classList.add('active');
-
                 showScreen(screen);
             });
         });
+
+        // Floating QR Scanner button
+        const floatingQr = $('#btn-floating-qr');
+        if (floatingQr) {
+            floatingQr.addEventListener('click', () => {
+                openScanner();
+            });
+        }
 
         // Scanner back
         $('#btn-scanner-back').addEventListener('click', () => {
@@ -186,39 +174,107 @@
         });
 
         // Profile from home avatar
-        $('#btn-profile-home').addEventListener('click', () => {
-            $$('.nav-item').forEach(n => n.classList.remove('active'));
-            $('#nav-profile').classList.add('active');
-            showScreen('profile');
-        });
-
-        // View all transactions
-        $('#btn-view-all-transactions').addEventListener('click', () => {
-            $$('.nav-item').forEach(n => n.classList.remove('active'));
-            $('#nav-history').classList.add('active');
-            showScreen('history');
-        });
-
-        // Secret fail button
-        const secretBtn = $('#secret-fail-btn');
-        if (secretBtn) {
-            secretBtn.addEventListener('click', async () => {
-                const success = await SupabaseDB.failLatestTransaction();
-                if (success) {
-                    await SupabaseDB.fetchBalance();
-                    renderHome();
-                    renderHistory();
-                }
+        const btnProfileHome = $('#btn-profile-home');
+        if (btnProfileHome) {
+            btnProfileHome.addEventListener('click', () => {
+                showScreen('profile');
             });
         }
+
+        // View all transactions (from main page, money page, or bank balance page)
+        const openAllTransactions = () => {
+            renderHistory('all');
+            showOverlay('history');
+        };
+
+        const btnViewAllTxs = $('#btn-view-all-transactions');
+        if (btnViewAllTxs) btnViewAllTxs.addEventListener('click', openAllTransactions);
+
+        const btnBalPageSeeAll = $('#btn-bal-page-see-all');
+        if (btnBalPageSeeAll) btnBalPageSeeAll.addEventListener('click', openAllTransactions);
+
+        const btnMoneySeeAll = $('#btn-money-see-all');
+        if (btnMoneySeeAll) btnMoneySeeAll.addEventListener('click', openAllTransactions);
+
+        // History Back button
+        const btnHistoryBack = $('#btn-history-back');
+        if (btnHistoryBack) {
+            btnHistoryBack.addEventListener('click', () => {
+                hideOverlay('history');
+            });
+        }
+
+        const btnCheckBalHome = $('#btn-check-balance');
+        if (btnCheckBalHome) btnCheckBalHome.addEventListener('click', triggerBankBalancePin);
+
+        const btnMoneyCheckBal = $('#btn-money-check-bal');
+        if (btnMoneyCheckBal) btnMoneyCheckBal.addEventListener('click', triggerBankBalancePin);
+
+        // Bank Balance Screen Back & Actions
+        const btnBankBalBack = $('#btn-bank-bal-back');
+        if (btnBankBalBack) {
+            btnBankBalBack.addEventListener('click', () => {
+                hideOverlay('bank-balance');
+            });
+        }
+
+        // Offers screen
+        const openOffers = () => showOverlay('offers');
+        const btnRewards = $('#btn-rewards');
+        const btnOffers = $('#btn-offers');
+        const btnReferrals = $('#btn-referrals');
+        if (btnRewards) btnRewards.addEventListener('click', openOffers);
+        if (btnOffers) btnOffers.addEventListener('click', openOffers);
+        if (btnReferrals) btnReferrals.addEventListener('click', openOffers);
+
+        const btnOffersBack = $('#btn-offers-back');
+        if (btnOffersBack) btnOffersBack.addEventListener('click', () => hideOverlay('offers'));
+
+        // CIBIL handlers
+        const onCibilClick = () => {
+            alert('Your CIBIL Score is 785 (Excellent)\nUpdated today. Your credit profile is in great health!');
+        };
+        const btnCibilBanner = $('#cibil-banner');
+        if (btnCibilBanner) btnCibilBanner.addEventListener('click', onCibilClick);
+        const btnCibilLink = $('#btn-cibil');
+        if (btnCibilLink) btnCibilLink.addEventListener('click', onCibilClick);
+        const btnMoneyCibil = $('#btn-money-cibil');
+        if (btnMoneyCibil) btnMoneyCibil.addEventListener('click', onCibilClick);
+
+        // Manage Bills & Explore Businesses
+        const btnViewBills = $('#btn-view-bills');
+        if (btnViewBills) {
+            btnViewBills.addEventListener('click', () => {
+                const billsGrid = $('#bills-grid');
+                if (billsGrid) billsGrid.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        }
+
+        const btnViewBiz = $('#btn-view-biz');
+        if (btnViewBiz) {
+            btnViewBiz.addEventListener('click', () => {
+                isBizExpanded = !isBizExpanded;
+                renderBusinessesGrid();
+            });
+        }
+    }
+
+    function renderMoneyTab() {
+        const bankName = APP_DATA.user.bank.name;
+        const bankLast4 = APP_DATA.user.bank.account.slice(-4);
+        const moneyBankName = $('#money-bank-name');
+        if (moneyBankName) moneyBankName.textContent = bankName + ' ••••' + bankLast4;
+
+        renderTransactionList('#money-transactions', APP_DATA.transactions.slice(0, 5), false);
     }
 
     function showScreen(name) {
         if (name !== currentScreen) pushHistory(name);
 
-        const tabScreens = ['home', 'history', 'offers', 'profile'];
+        const tabScreens = ['home', 'money', 'profile'];
         tabScreens.forEach(s => {
             const el = $(`#screen-${s}`);
+            if (!el) return;
             if (s === name) {
                 el.classList.remove('hidden');
                 el.classList.add('active');
@@ -228,65 +284,168 @@
             }
         });
         currentScreen = name;
+
+        if (name === 'money') {
+            renderMoneyTab();
+        }
+
+        // Show bottom nav for tab screens
+        const bottomNav = $('#bottom-nav');
+        if (bottomNav) bottomNav.style.display = 'flex';
+
+        // Highlight active nav item
+        $$('.nav-item').forEach(n => n.classList.remove('active'));
+        const activeNav = $(`.nav-item[data-screen="${name}"]`);
+        if (activeNav) activeNav.classList.add('active');
     }
+
+    let overlayStack = [];
 
     function showOverlay(name) {
         pushHistory('overlay-' + name);
         const el = $(`#screen-${name}`);
+        if (!el) return;
+
+        // Remove name if already in stack, then push to top
+        overlayStack = overlayStack.filter(item => item !== name);
+        overlayStack.push(name);
+
+        // Dynamically assign higher z-index so top overlay is ALWAYS visible on top!
+        const baseZ = 60 + overlayStack.length * 10;
+        el.style.zIndex = baseZ;
+        el.style.display = 'flex';
+
         el.classList.remove('hidden');
         slideIn(el, 'right');
+
+        // Hide bottom nav during overlays
+        const bottomNav = $('#bottom-nav');
+        if (bottomNav) bottomNav.style.display = 'none';
+    }
+
+    function closeOverlayDirectly(name) {
+        const el = $(`#screen-${name}`);
+        if (!el) return;
+
+        slideOut(el, 'right');
+        setTimeout(() => {
+            el.classList.add('hidden');
+            el.style.display = 'none';
+            el.style.zIndex = '';
+        }, 350);
+
+        overlayStack = overlayStack.filter(item => item !== name);
+
+        // Show bottom nav again ONLY if no active overlays remain
+        if (overlayStack.length === 0) {
+            const bottomNav = $('#bottom-nav');
+            if (bottomNav) bottomNav.style.display = 'flex';
+        }
     }
 
     function hideOverlay(name) {
         popHistory();
-        const el = $(`#screen-${name}`);
-        slideOut(el, 'right');
-        setTimeout(() => el.classList.add('hidden'), 350);
+        closeOverlayDirectly(name);
     }
 
     // ---------- Home Screen ----------
+    let isPeopleExpanded = false;
+    let isBizExpanded = false;
+
     function renderHome() {
         // Quick Actions
         const grid = $('#quick-actions-grid');
-        grid.innerHTML = APP_DATA.quickActions.map(action => `
-            <div class="quick-action-item ripple" data-action="${action.id}">
-                <div class="quick-action-icon">
-                    <span class="material-symbols-rounded">${action.icon}</span>
+        if (grid) {
+            grid.innerHTML = APP_DATA.quickActions.map(action => `
+                <div class="quick-action-item ripple" data-action="${action.id}">
+                    <div class="quick-action-icon">
+                        <span class="material-symbols-rounded">${action.icon}</span>
+                    </div>
+                    <span class="quick-action-label">${action.label.replace('\n', '<br>')}</span>
                 </div>
-                <span class="quick-action-label">${action.label}</span>
-            </div>
-        `).join('');
+            `).join('');
 
-        grid.querySelectorAll('.quick-action-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const action = item.dataset.action;
-                if (action === 'scan') {
-                    openScanner();
-                } else if (action === 'pay-contacts') {
-                    startPayment(APP_DATA.contacts[0]);
-                } else if (action === 'pay-phone') {
-                    startPayment({ name: 'Phone Number', initials: 'PN', upiId: 'Enter number', color: '#34A853' });
-                } else if (action === 'pay-self') {
-                    startPayment({
-                        name: APP_DATA.user.name,
-                        initials: APP_DATA.user.initials,
-                        upiId: APP_DATA.user.upiId,
-                        color: '#1a73e8'
-                    });
-                }
+            grid.querySelectorAll('.quick-action-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const action = item.dataset.action;
+                    if (action === 'scan') {
+                        openScanner();
+                    } else if (action === 'pay-phone' || action === 'pay-contacts') {
+                        startPayment(APP_DATA.contacts[0]);
+                    } else if (action === 'pay-self') {
+                        startPayment({
+                            name: APP_DATA.user.name,
+                            initials: APP_DATA.user.initials,
+                            upiId: APP_DATA.user.upiId,
+                            color: '#0B57D0'
+                        });
+                    }
+                });
             });
-        });
+        }
 
-        // People scroll
-        const peopleScroll = $('#people-scroll');
-        peopleScroll.innerHTML = APP_DATA.contacts.map(contact => `
+        // People Section
+        renderPeopleGrid();
+
+        // Businesses Section
+        renderBusinessesGrid();
+
+        // Bills grid
+        const billsGrid = $('#bills-grid');
+        if (billsGrid) {
+            billsGrid.innerHTML = APP_DATA.billCategories.map(bill => `
+                <div class="bill-item ripple" data-bill-id="${bill.id}">
+                    <div class="bill-icon" style="background: ${bill.color};">
+                        <span class="material-symbols-rounded">${bill.icon}</span>
+                    </div>
+                    <span class="bill-label">${bill.label.replace('\n', '<br>')}</span>
+                </div>
+            `).join('');
+
+            billsGrid.querySelectorAll('.bill-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const billId = item.dataset.billId;
+                    const category = APP_DATA.billCategories.find(b => b.id === billId);
+                    startPayment({
+                        name: item.querySelector('.bill-label').innerText.replace('\n', ' '),
+                        initials: 'GP',
+                        upiId: `${billId || 'bill'}@upi`,
+                        color: category ? category.color : '#0B57D0'
+                    });
+                });
+            });
+        }
+    }
+
+    function renderPeopleGrid() {
+        const peopleContainer = $('#people-scroll');
+        if (!peopleContainer) return;
+
+        const maxVisible = isPeopleExpanded ? APP_DATA.contacts.length : 7;
+        const visibleContacts = APP_DATA.contacts.slice(0, maxVisible);
+
+        let html = visibleContacts.map(contact => `
             <div class="person-item ripple" data-upi-id="${contact.upiId}">
                 <div class="person-avatar" style="background: ${contact.color};">${contact.initials}</div>
-                <span class="person-name">${contact.name.split(' ')[0]}</span>
+                <span class="person-name">${contact.name}</span>
             </div>
         `).join('');
 
-        peopleScroll.querySelectorAll('.person-item').forEach(item => {
+        // Expand / Collapse button
+        if (APP_DATA.contacts.length > 7) {
+            html += `
+                <div class="person-item ripple" id="btn-toggle-people">
+                    <div class="person-avatar toggle-more-avatar">
+                        <span class="material-symbols-rounded">${isPeopleExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</span>
+                    </div>
+                    <span class="person-name">${isPeopleExpanded ? 'Less' : 'More'}</span>
+                </div>
+            `;
+        }
+
+        peopleContainer.innerHTML = html;
+
+        peopleContainer.querySelectorAll('.person-item[data-upi-id]').forEach(item => {
             item.addEventListener('click', () => {
                 const upiId = item.dataset.upiId;
                 const contact = APP_DATA.contacts.find(c => c.upiId === upiId);
@@ -294,59 +453,57 @@
             });
         });
 
-        // Bills grid
-        const billsGrid = $('#bills-grid');
-        billsGrid.innerHTML = APP_DATA.billCategories.map(bill => `
-            <div class="bill-item ripple" data-bill-id="${bill.id}">
-                <div class="bill-icon" style="background: ${bill.color};">
-                    <span class="material-symbols-rounded">${bill.icon}</span>
-                </div>
-                <span class="bill-label">${bill.label}</span>
+        const toggleBtn = $('#btn-toggle-people');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                isPeopleExpanded = !isPeopleExpanded;
+                renderPeopleGrid();
+            });
+        }
+    }
+
+    function renderBusinessesGrid() {
+        const bizContainer = $('#businesses-grid');
+        if (!bizContainer) return;
+
+        const maxVisible = isBizExpanded ? APP_DATA.businesses.length : 7;
+        const visibleBiz = APP_DATA.businesses.slice(0, maxVisible);
+
+        let html = visibleBiz.map(biz => `
+            <div class="person-item ripple" data-biz-id="${biz.id}">
+                <div class="person-avatar" style="background: ${biz.color};">${biz.initials}</div>
+                <span class="person-name">${biz.name}</span>
             </div>
         `).join('');
 
-        billsGrid.querySelectorAll('.bill-item').forEach(item => {
-            item.addEventListener('click', async () => {
-                if (item.dataset.billId === 'fail-last') {
-                    const confirmFail = confirm("Do you want to make the previous transaction failed?");
-                    if (confirmFail) {
-                        const success = await SupabaseDB.failLatestTransaction();
-                        if (success) {
-                            await SupabaseDB.fetchBalance();
-                            renderHome();
-                            renderHistory();
-                        } else {
-                            alert("No completed sent transaction found to fail.");
-                        }
-                    }
-                } else if (item.dataset.billId === 'safe-last') {
-                    const confirmSafe = confirm("Do you want to revert the latest failed transaction to completed?");
-                    if (confirmSafe) {
-                        const success = await SupabaseDB.revertLatestFailedTransaction();
-                        if (success) {
-                            await SupabaseDB.fetchBalance();
-                            renderHome();
-                            renderHistory();
-                        } else {
-                            alert("No failed sent transaction found to revert.");
-                        }
-                    }
-                }
+        if (APP_DATA.businesses.length > 7) {
+            html += `
+                <div class="person-item ripple" id="btn-toggle-biz">
+                    <div class="person-avatar toggle-more-avatar">
+                        <span class="material-symbols-rounded">${isBizExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</span>
+                    </div>
+                    <span class="person-name">${isBizExpanded ? 'Less' : 'More'}</span>
+                </div>
+            `;
+        }
+
+        bizContainer.innerHTML = html;
+
+        bizContainer.querySelectorAll('.person-item[data-biz-id]').forEach(item => {
+            item.addEventListener('click', () => {
+                const id = parseInt(item.dataset.bizId, 10);
+                const biz = APP_DATA.businesses.find(b => b.id === id);
+                if (biz) startPayment(biz);
             });
         });
 
-        // Offers scroll
-        const offersScroll = $('#offers-scroll');
-        offersScroll.innerHTML = APP_DATA.offers.map(offer => `
-            <div class="offer-card" style="background: ${offer.color};">
-                <span class="material-symbols-rounded offer-icon">${offer.icon}</span>
-                <div class="offer-title">${offer.title}</div>
-                <div class="offer-desc">${offer.desc}</div>
-            </div>
-        `).join('');
-
-        // Recent transactions (show 4)
-        renderTransactionList('#home-transactions', APP_DATA.transactions.slice(0, 4));
+        const toggleBizBtn = $('#btn-toggle-biz');
+        if (toggleBizBtn) {
+            toggleBizBtn.addEventListener('click', () => {
+                isBizExpanded = !isBizExpanded;
+                renderBusinessesGrid();
+            });
+        }
     }
 
     function renderTransactionList(selector, transactions, groupByMonth = false) {
@@ -383,22 +540,31 @@
                     currentMonthGroup = monthYear;
                     const parts = monthYear.split(' ');
                     const total = monthlyTotals[monthYear] || 0;
-                    const totalColor = total >= 0 ? '#81c995' : '#f28b82';
-                    const totalSign = total >= 0 ? '+' : '-';
-                    const totalDisplay = totalSign + ' ₹' + Math.abs(total).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+                    const totalColor = total >= 0 ? '#81c995' : '#e8eaed';
+                    const totalSign = total > 0 ? '+ ' : (total < 0 ? '- ' : '');
+                    const totalDisplay = totalSign + '₹' + Math.abs(total).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
                     html += `
-                        <div class="month-header" style="background: #2d2d2d; padding: 16px 24px 8px; margin-top: 8px;">
+                        <div class="month-header" style="background: transparent; padding: 20px 20px 8px; margin-top: 4px;">
                             <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                                 <div>
-                                    <div style="font-size: 13px; font-weight: 700; color: #9aa0a6;">${parts[1]}</div>
-                                    <div style="font-size: 22px; font-weight: 700; color: #e8eaed;">${parts[0]}</div>
+                                    <div style="font-size: 12px; font-weight: 400; color: #9aa0a6; margin-bottom: 2px;">${parts[1]}</div>
+                                    <div style="font-size: 22px; font-weight: 500; color: #e8eaed; letter-spacing: -0.2px;">${parts[0]}</div>
                                 </div>
-                                <div style="font-size: 15px; font-weight: 600; color: ${totalColor};">${totalDisplay}</div>
+                                <div style="font-size: 16px; font-weight: 500; color: ${totalColor};">${totalDisplay}</div>
                             </div>
                         </div>
                     `;
                 }
             }
+
+            const dateObj = new Date(tx.date);
+            const txDateStr = groupByMonth 
+                ? dateObj.toLocaleDateString('en-IN', { day: 'numeric', month: 'long' }) 
+                : formatDate(tx.date);
+
+            const amountClass = tx.type === 'sent' ? 'sent' : 'received';
+            const amountPrefix = (tx.type === 'sent' || isFailed) ? '' : '+ ';
+            const amountFormatted = amountPrefix + formatCurrency(tx.amount);
 
             html += `
             <div class="transaction-item ripple list-item" data-tx-id="${tx.id}">
@@ -406,12 +572,12 @@
                 <div class="transaction-details">
                     <div class="transaction-name" ${isFailed ? 'style="color: #f28b82;"' : ''}>${tx.name}</div>
                     <div class="transaction-date">
-                        ${formatDate(tx.date)}
+                        ${txDateStr}
                         ${isFailed ? '<span style="color: #f28b82; font-weight: 500; margin-left: 4px;">• Failed</span>' : ''}
                     </div>
                 </div>
-                <div class="transaction-amount ${tx.type === 'sent' ? 'sent' : 'received'}" ${isFailed ? 'style="color: var(--text-secondary); text-decoration: line-through;"' : ''}>
-                    ${tx.type === 'sent' ? '- ' : '+ '}${formatCurrency(tx.amount)}
+                <div class="transaction-amount ${amountClass}" ${isFailed ? 'style="color: var(--text-secondary); text-decoration: line-through;"' : ''}>
+                    ${amountFormatted}
                 </div>
             </div>
             `;
@@ -433,10 +599,19 @@
 
     // ---------- History Screen ----------
     function renderHistory(filter = 'all') {
+        const searchInput = $('#history-search-input');
+        const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
         let transactions = APP_DATA.transactions;
         if (filter === 'sent') transactions = transactions.filter(tx => tx.type === 'sent');
         else if (filter === 'received') transactions = transactions.filter(tx => tx.type === 'received');
         else if (filter === 'rewards') transactions = transactions.filter(tx => tx.name === 'Cashback');
+
+        if (query) {
+            transactions = transactions.filter(tx => 
+                tx.name.toLowerCase().includes(query) || (tx.upiId && tx.upiId.toLowerCase().includes(query))
+            );
+        }
 
         renderTransactionList('#history-transactions', transactions, true);
 
@@ -444,6 +619,15 @@
             chip.classList.toggle('active', chip.dataset.filter === filter);
             chip.onclick = () => renderHistory(chip.dataset.filter);
         });
+
+        if (searchInput && !searchInput.dataset.listening) {
+            searchInput.dataset.listening = 'true';
+            searchInput.addEventListener('input', () => {
+                const activeChip = $('.filter-chip.active');
+                const currentFilter = activeChip ? activeChip.dataset.filter : 'all';
+                renderHistory(currentFilter);
+            });
+        }
     }
 
     // ---------- Offers Screen ----------
@@ -465,19 +649,19 @@
 
     // ---------- Balance Card ----------
     function setupBalanceCard() {
-        $('#btn-check-balance').addEventListener('click', async () => {
-            if (!balanceVisible) {
-                balanceVisible = true;
-                const display = $('#balance-display');
-                const balance = await SupabaseDB.fetchBalance();
-                animateNumber(display, balance);
-                $('#btn-check-balance').textContent = 'Hide balance';
-            } else {
-                balanceVisible = false;
-                $('#balance-display').textContent = '••••••';
-                $('#btn-check-balance').textContent = 'Check balance';
-            }
-        });
+        const profileBankCard = $('#bank-card');
+        if (profileBankCard) {
+            profileBankCard.addEventListener('click', () => {
+                triggerBankBalancePin();
+            });
+        }
+        const paySheetCheckLink = $('.pay-sheet-check-link');
+        if (paySheetCheckLink) {
+            paySheetCheckLink.addEventListener('click', (e) => {
+                e.stopPropagation();
+                triggerBankBalancePin();
+            });
+        }
     }
 
     // ---------- Search ----------
@@ -767,10 +951,16 @@
         updatePinDots();
         $('#btn-confirm-pin').disabled = true;
 
-        const amount = parseFloat(payAmount);
-        $('#pin-pay-amount').textContent = '₹' + amount.toFixed(2);
-        $('#pin-payee-name').textContent = currentPayee.name;
-        $('#pin-bank-name').textContent = APP_DATA.user.bank.name;
+        if (activePinIntent === 'check-balance') {
+            $('#pin-pay-amount').textContent = 'Check Balance';
+            $('#pin-payee-name').textContent = APP_DATA.user.bank.name + ' ' + APP_DATA.user.bank.account;
+            $('#pin-bank-name').textContent = APP_DATA.user.bank.name;
+        } else {
+            const amount = parseFloat(payAmount);
+            $('#pin-pay-amount').textContent = '₹' + amount.toFixed(2);
+            $('#pin-payee-name').textContent = currentPayee ? currentPayee.name : 'Payee';
+            $('#pin-bank-name').textContent = APP_DATA.user.bank.name;
+        }
 
         showOverlay('pin');
     }
@@ -786,10 +976,49 @@
         });
     }
 
-    // ---------- Process Payment ----------
+    // ---------- Process Payment / Check Balance ----------
     async function processPayment() {
         if (isProcessingPayment) return;
         isProcessingPayment = true;
+
+        if (activePinIntent === 'check-balance') {
+            const currentBal = await SupabaseDB.fetchBalance();
+            closeOverlayDirectly('pin');
+            isProcessingPayment = false;
+            activePinIntent = 'payment';
+
+            const formatted = formatCurrency(currentBal);
+            const balAmtEl = $('#bal-page-amount');
+            if (balAmtEl) balAmtEl.textContent = formatted;
+            const balNameEl = $('#bal-page-bank-name');
+            if (balNameEl) balNameEl.textContent = APP_DATA.user.bank.name + ' ••••' + APP_DATA.user.bank.account.slice(-4);
+            const balTypeEl = $('#bal-page-bank-type');
+            if (balTypeEl) balTypeEl.textContent = 'Savings account';
+
+            // Render recent transactions preview under balance card matching real GPay
+            const txContainer = $('#bal-page-transactions');
+            if (txContainer) {
+                renderTransactionList('#bal-page-transactions', APP_DATA.transactions.slice(0, 5), false);
+            }
+
+            // Cleanly replace history hash with #overlay-bank-balance
+            history.replaceState(null, '', '#overlay-bank-balance');
+            overlayStack = overlayStack.filter(item => item !== 'pin' && item !== 'bank-balance');
+            overlayStack.push('bank-balance');
+
+            const balEl = $('#screen-bank-balance');
+            if (balEl) {
+                balEl.style.zIndex = 70;
+                balEl.style.display = 'flex';
+                balEl.classList.remove('hidden');
+                slideIn(balEl, 'right');
+            }
+
+            const bottomNav = $('#bottom-nav');
+            if (bottomNav) bottomNav.style.display = 'none';
+
+            return;
+        }
 
         // Capture everything BEFORE any resets
         const amount = parseFloat(payAmount);
@@ -807,9 +1036,10 @@
         pinValue = '';
         payAmount = '';
 
-        // Hide pin and payment
-        hideOverlay('pin');
-        setTimeout(() => hideOverlay('payment'), 100);
+        // Close pin and payment overlays directly without history desync
+        closeOverlayDirectly('pin');
+        closeOverlayDirectly('payment');
+        history.replaceState(null, '', '#result');
 
         // Format date
         const now = new Date();
@@ -918,6 +1148,7 @@
                         resultScreen.classList.add('hidden');
                         resultScreen.style.opacity = '';
                         resultScreen.style.transition = '';
+                        history.replaceState(null, '', '#home');
                         showScreen('home');
                         renderHome();
                         renderHistory();
